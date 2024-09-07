@@ -26,6 +26,4 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout title={scene}>
-  <script is:inline set:html={sketch} />
-</Layout>
+<Layout title={scene} sketch={sketch} />

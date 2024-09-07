@@ -5,9 +5,11 @@ import '@src/assets/styles/normalize.css'
 
 interface Props {
   title?: string
+  sketch: string
 }
 
 const title = Astro.props.title || 'Tina'
+const sketch = Astro.props.sketch
 ---
 
 <!doctype html>
@@ -25,9 +27,7 @@ const title = Astro.props.title || 'Tina'
     ></script>
   </head>
   <body>
-    <script is:inline set:html={TinaCommon} />
-    <script is:inline set:html={Tina} />
-    <slot />
+    <script set:html={TinaCommon + Tina + sketch} />
   </body>
 </html>
 
