@@ -1,6 +1,7 @@
 ---
-import Tina from '@src/lib/tina?raw'
-import TinaCommon from '@src/lib/tina.common?raw'
+import TINA from '@src/lib/tina?raw'
+import TINA_COMMON from '@src/lib/tina.common?raw'
+import TINA_RAYMARCH from '@src/lib/tina.raymarch?raw'
 import '@src/assets/styles/normalize.css'
 
 interface Props {
@@ -9,7 +10,8 @@ interface Props {
 }
 
 const title = Astro.props.title || 'Tina'
-const sketch = Astro.props.sketch
+const SKETCH = Astro.props.sketch
+const SCRIPT = TINA_COMMON + TINA_RAYMARCH + TINA + SKETCH
 ---
 
 <!doctype html>
@@ -27,7 +29,7 @@ const sketch = Astro.props.sketch
     ></script>
   </head>
   <body>
-    <script set:html={TinaCommon + Tina + sketch} />
+    <script set:html={SCRIPT} />
   </body>
 </html>
 
