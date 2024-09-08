@@ -1,6 +1,9 @@
 ---
 import TINA from '@src/lib/tina?raw'
 import TINA_COMMON from '@src/lib/tina.common?raw'
+import TINA_RAYMARCH_LIGHT from '@src/lib/tina.raymarch.light?raw'
+import TINA_RAYMARCH_MATERIAL from '@src/lib/tina.raymarch.material?raw'
+import TINA_RAYMARCH_SCENE from '@src/lib/tina.raymarch.scene?raw'
 import TINA_RAYMARCH from '@src/lib/tina.raymarch?raw'
 import '@src/assets/styles/normalize.css'
 
@@ -11,7 +14,15 @@ interface Props {
 
 const title = Astro.props.title || 'Tina'
 const SKETCH = Astro.props.sketch
-const SCRIPT = TINA_COMMON + TINA_RAYMARCH + TINA + SKETCH
+const SCRIPT = [
+  TINA_COMMON,
+  TINA_RAYMARCH,
+  TINA_RAYMARCH_MATERIAL,
+  TINA_RAYMARCH_SCENE,
+  TINA_RAYMARCH_LIGHT,
+  TINA,
+  SKETCH,
+].join('\n')
 ---
 
 <!doctype html>

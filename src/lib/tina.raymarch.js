@@ -21,4 +21,13 @@ RayMarch rayMarch(vec3 ro, vec3 rd) {
   }
   return rm;
 }
+
+float rayShot(vec3 origin, vec3 target) {
+  vec3 lightDir = normalize(target - origin);
+  RayMarch rm = rayMarch(
+    origin, lightDir
+  );
+  float obstacleDist = length(rm.pos - target);
+  return obstacleDist;
+}
 `
