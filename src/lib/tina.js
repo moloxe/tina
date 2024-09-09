@@ -8,7 +8,7 @@ void main() {
   gl_Position = vec4(aPosition * 2.0 - 1.0, 1.0);
 }`
 
-function FragBuilder(width, height, scene) {
+function FragBuilder(scene) {
   this.mainContent = `fragColor = vec4(1.);`
   this.head = ``
   this.getFrag = () => `#version 300 es
@@ -18,8 +18,8 @@ function FragBuilder(width, height, scene) {
 
     in vec2 pos;
     uniform float time;
-    const float width = ${width.toFixed(6)};
-    const float height = ${height.toFixed(6)};
+    uniform float width;
+    uniform float height;
     out vec4 fragColor;
 
     ${scene !== null ? buildMaterials(scene) : ''}
@@ -34,7 +34,9 @@ function FragBuilder(width, height, scene) {
 }
 
 function Tina(width, height) {
-  const graphics = createGraphics(width, height, WEBGL)
+  this.width = width
+  this.height = height
+  const graphics = createGraphics(this.width, this.height, WEBGL)
   graphics.pixelDensity(1)
 
   let shader, startTime
@@ -46,10 +48,20 @@ function Tina(width, height) {
     if (this.shader) throw new Error('Shader already built')
     this.scene = new Scene()
     sceneBuilder(this.scene)
+    if (this.scene.pointLights.length === 0)
+      throw new Error('At least one point light is required when using a scene')
+    if (this.scene.materials.length === 0)
+      throw new Error('At least one material is required when using a scene')
+  }
+
+  this.resize = (width, height) => {
+    this.width = width
+    this.height = height
+    graphics.resizeCanvas(width, height)
   }
 
   this.build = (content = '') => {
-    const fragBuilder = new FragBuilder(width, height, this.scene)
+    const fragBuilder = new FragBuilder(this.scene)
     startTime = new Date().getTime()
 
     if (!content.includes('---')) content = `---${content}`
@@ -69,11 +81,15 @@ function Tina(width, height) {
   this.update = (uniforms = {}) => {
     if (!shader) throw new Error('Missed build: call Tina.build()')
 
-    if (this.scene) uniforms = { ...uniforms, ...this.scene.getUniforms() }
+    if (this.scene) {
+      uniforms = { ...uniforms, ...this.scene.getUniforms() }
+    }
 
     const time = new Date().getTime() - startTime
 
     shader.setUniform('time', time / 1000)
+    shader.setUniform('width', this.width)
+    shader.setUniform('height', this.height)
 
     Object.entries(uniforms).forEach(([uniform, value]) =>
       shader.setUniform(uniform, value)
