@@ -1,7 +1,7 @@
 let tina
 const cam = [2, 0, 0] // spherical coordinate
 
-function mouseMoved() {
+function mouseDragged() {
   cam[1] -= movedX / 100
   cam[2] -= movedY / 100
 }
