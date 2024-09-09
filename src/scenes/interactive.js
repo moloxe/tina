@@ -97,7 +97,7 @@ function setup() {
 
     scene.box({
       pos: [-1, 0, 0],
-      dimensions: [0, 0.5, 0.5],
+      dimensions: [1e-3, 0.5, 0.5],
     })
 
     playerMaterial = scene.sphere({
@@ -220,6 +220,7 @@ function controlsListener() {
 }
 
 function mouseMoved() {
+  if (!fullscreen()) return
   player.cam[1] -= movedX / 300
   player.cam[2] -= movedY / 300
 }

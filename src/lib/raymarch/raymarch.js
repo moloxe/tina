@@ -20,7 +20,6 @@ SdScene sdScene(vec3 p) {
     } else if (m.shape == 2) {
       d = sdBox(p - m.pos, m.dimensions);
     }
-    d = abs(d);
     if (d < sd.distance) {
       sd.distance = d;
       sd.materialIndex = i;
@@ -35,11 +34,12 @@ RayMarch rayMarch(vec3 ro, vec3 rd) {
   for(int i = 0; i < 1024; i++) {
     rm.pos = ro + z * rd;
     SdScene sd = sdScene(rm.pos);
-    if(sd.distance < 1e-3) {
+    float distance = abs(sd.distance);
+    if(distance < 1e-4) {
       rm.materialIndex = sd.materialIndex;
       break;
     }
-    z += sd.distance;
+    z += distance;
     if(z > 1e4) {
       break;
     }
@@ -48,7 +48,7 @@ RayMarch rayMarch(vec3 ro, vec3 rd) {
 }
 
 vec3 calcSceneNormal(vec3 p) {
-  float eps = 1e-6;
+  float eps = 1e-4;
   vec3 h = vec3(eps, 0.0, 0.0);
   return normalize(vec3(
     sdScene(p + h.xyy).distance - sdScene(p - h.xyy).distance,

@@ -32,12 +32,12 @@ function setup() {
 
     scene.box({
       pos: [0, -0.5, 0],
-      dimensions: [2, 0, 2],
+      dimensions: [2, 1e-3, 2],
     })
 
     scene.box({
       pos: [-1, 0, 0],
-      dimensions: [0, 0.5, 0.5],
+      dimensions: [1e-3, 0.5, 0.5],
     })
 
     skyblueLight = scene.pointLight({
