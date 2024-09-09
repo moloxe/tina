@@ -1,4 +1,4 @@
-let tina
+let tina, skyblueLight
 const cam = [2, 0, 0] // spherical coordinate
 
 function mouseDragged() {
@@ -40,7 +40,7 @@ function setup() {
       dimensions: [0, 0.5, 0.5],
     })
 
-    scene.pointLight({
+    skyblueLight = scene.pointLight({
       color: [0.4, 0.8, 0.8],
       power: 0.5,
     })
@@ -77,7 +77,7 @@ let FPS = 0
 function draw() {
   const angle = frameCount / 200
 
-  tina.scene.pointLights[0].pos = [0.8 * cos(angle), 0, 0.8 * sin(angle)]
+  skyblueLight.pos = [0.8 * cos(angle), 0, 0.8 * sin(angle)]
 
   const graphics = tina.update({
     cam,
