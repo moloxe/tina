@@ -1,0 +1,49 @@
+---
+import PageLayout from '@src/layouts/PageLayout.astro'
+import TinaImg from '@src/assets/images/tina.jpeg'
+import TinaExamples, { type TinaExample } from '@src/components/TinaExamples'
+
+const files = import.meta.glob('@src/scenes/*.js', {
+  eager: false,
+  query: '?raw',
+})
+
+const paths = Object.keys(files)
+const examples: TinaExample[] = []
+
+for (let index = 0; index < paths.length; index++) {
+  const path = paths[index]
+  const route = path.split('/').pop()?.replace('.js', '') ?? ''
+  const sketch = ((await files[path]()) as any).default as string
+  examples.push({ route, sketch })
+}
+---
+
+<PageLayout>
+  <main class="flex flex-col gap-12 p-2 justify-center w-full max-w-2xl m-auto">
+    <img src={TinaImg.src} alt="Tina logo" />
+
+    <p>
+      A tool for writing shaders in P5js, focused on SDF with ray marching 😎
+    </p>
+
+    <p>
+      To try it out <a href="https://github.com/moloxe/tina" target="_blank"
+        >clone this repo</a
+      > and create your own scenes in
+      <code>src/scenes</code>
+    </p>
+
+    <TinaExamples client:load examples={examples} />
+  </main>
+</PageLayout>
+
+<footer class="py-16 flex justify-center">
+  <a href="https://moloxe.io">moloxe.io</a>
+</footer>
+
+<style>
+  a {
+    @apply text-[var(--primary)];
+  }
+</style>

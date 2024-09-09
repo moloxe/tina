@@ -5,7 +5,7 @@ import TINA_RAYMARCH_LIGHT from '@src/lib/raymarch/light?raw'
 import TINA_RAYMARCH_MATERIAL from '@src/lib/raymarch/material?raw'
 import TINA_RAYMARCH_SCENE from '@src/lib/raymarch/scene?raw'
 import TINA_RAYMARCH from '@src/lib/raymarch/raymarch?raw'
-import '@src/assets/styles/normalize.css'
+import '@src/assets/styles/main.css'
 
 interface Props {
   title?: string
@@ -40,6 +40,14 @@ const SCRIPT = [
     ></script>
   </head>
   <body>
+    <img
+      class="absolute w-0 h-0"
+      src="https://librecounter.org/counter.svg"
+      loading="eager"
+      decoding="async"
+      referrerpolicy="unsafe-url"
+      id="libre-counter"
+    />
     <script set:html={SCRIPT} />
   </body>
 </html>
