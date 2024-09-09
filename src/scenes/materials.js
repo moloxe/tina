@@ -1,5 +1,5 @@
 let tina, skyblueLight
-const cam = [2, 0, 0] // spherical coordinate
+const cam = [2, 0, 0] // spherical coordinates
 
 function mouseDragged() {
   cam[1] -= movedX / 100
