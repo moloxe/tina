@@ -5,7 +5,7 @@ function setup() {
 
   tina = new Tina(width, height)
 
-  tina.build(`
+  tina.build(/* glsl */ `
     float sdTerrain(vec3 p) {
       float height = cos(p.x) + cos(p.y) + cos(p.z);
       return sin(p.z) - height;
