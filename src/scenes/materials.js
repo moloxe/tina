@@ -1,6 +1,5 @@
-let tina, scene
+let tina
 const cam = [2, 0, 0] // spherical coordinate
-const POINT_LIGHTS = 3
 
 function mouseMoved() {
   cam[1] -= movedX / 100
@@ -9,50 +8,52 @@ function mouseMoved() {
 
 function mouseWheel(event) {
   if (event.delta > 0) {
-    cam[0] += 0.1
+    cam[0] += 0.03
   } else {
-    cam[0] -= 0.1
+    cam[0] -= 0.03
   }
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
-  scene = new Scene()
 
-  scene.sphere({
-    pos: [0, -0.5, 0],
+  tina = new Tina(width, height)
+
+  tina.setScene((scene) => {
+    scene.sphere({
+      shininess: 512,
+      color: [1, 0, 1],
+    })
+
+    scene.box({
+      pos: [0, -0.5, 0],
+      dimensions: [0.3, 0.3, 0.3],
+    })
+
+    scene.box({
+      pos: [0, -0.5, 0],
+      dimensions: [2, 0, 2],
+    })
+
+    scene.box({
+      pos: [-1, 0, 0],
+      dimensions: [0, 0.5, 0.5],
+    })
+
+    scene.pointLight({
+      color: [0.4, 0.8, 0.8],
+      power: 0.5,
+    })
+
+    scene.pointLight({
+      pos: [-0.8, 0, 0],
+      color: [0.8, 0.8, 0.4],
+    })
   })
 
-  scene.box({
-    pos: [0, -1, 0],
-    dimensions: [0.3, 0.3, 0.3],
-  })
-
-  scene.box({
-    pos: [0, -1, 0],
-    dimensions: [2, 0, 2],
-  })
-
-  scene.box({
-    pos: [-1.5, -0.5, 0],
-    dimensions: [0, 0.5, 0.5],
-  })
-
-  scene.pointLight({
-    color: [1, 0, 1],
-  })
-
-  scene.pointLight({
-    pos: [-1.4, -0.5, 0],
-    color: [1, 1, 1],
-  })
-
-  tina = new Tina(256 * (width / height), 256)
-
-  tina.build(`
+  tina.build(/* glsl */ `
     uniform vec3 cam;
 
-    ${buildMaterials(scene.materials.length, 3)}
     ---
 
     uv = uv * 2. - 1.;
@@ -66,29 +67,20 @@ function setup() {
     rd *= rotateX(cam.z);
     rd *= rotateY(cam.y);
 
-    RayMarch rm = rayMarch(ro, rd);
-
-    if(!rm.isSurface) {
-      fragColor = vec4(0., 0., 0., 1.);
-      return;
-    }
-
-    vec3 lighting = calcLighting(rm.pos, 0.3);
+    vec3 lighting = calcLighting(ro, rd);
 
     fragColor = vec4(lighting, 1.);
   `)
-
-  noSmooth()
 }
 
 let FPS = 0
 function draw() {
   const angle = frameCount / 200
-  scene.pointLights[0].pos = [5 * cos(angle), 5, 5 * sin(angle)]
+
+  tina.scene.pointLights[0].pos = [0.8 * cos(angle), 0, 0.8 * sin(angle)]
 
   const graphics = tina.update({
-    ['cam']: cam,
-    ...scene.getUniforms(),
+    cam,
   })
 
   image(graphics, 0, 0, width, height)

@@ -23,10 +23,10 @@ function Scene() {
   this.getUniforms = function () {
     const uniforms = {}
     this.materials.forEach((material, index) => {
-      Object.assign(uniforms, material.build(index))
+      Object.assign(uniforms, material.getUniforms(index))
     })
     this.pointLights.forEach((pointLight, index) => {
-      Object.assign(uniforms, pointLight.build(index))
+      Object.assign(uniforms, pointLight.getUniforms(index))
     })
     return uniforms
   }
