@@ -48,7 +48,6 @@ function Player({ pos, cam }) {
   this.startPhysics = () => {
     const freq = 1000 / 60
     const gravity = 0.02
-    const height = 0.4
     setInterval(() => {
       this.pos[0] += this.vel[0]
       this.vel[0] *= 0.95
@@ -56,48 +55,55 @@ function Player({ pos, cam }) {
       this.vel[2] *= 0.95
       this.pos[1] += this.vel[1]
       this.vel[1] -= gravity / freq
-      if (this.pos[1] < -height) {
+      if (this.pos[1] < 0) {
         this.onTheFloor = true
         this.vel[1] = 0
-        this.pos[1] = -height
+        this.pos[1] = 0
       }
     }, freq)
   }
 }
 
 const player = new Player({
-  pos: [0, 0, 1],
+  pos: [0, 1, 1],
   cam: [0.6, 0, -0.5],
 })
 
 let tina,
-  playerMaterial,
-  rgbcmyLights = []
+  fps,
+  lights = []
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
 
-  tina = new Tina(240 * (width / height), 240)
+  tina = new Tina(width, height)
 
   tina.setScene((scene) => {
     scene.sphere({
       shininess: 512,
-      color: [1, 0, 1],
+      color: [1, 1, 1],
+      pos: [0, 0.2, 0],
     })
 
     scene.box({
-      pos: [0, -0.5, 0],
-      dimensions: [0.3, 0.3, 0.3],
+      shininess: 512,
+      pos: [0, 0.05, 0],
+      dimensions: [0.3, 0.05, 0.3],
     })
 
     scene.box({
-      pos: [0, -0.5, 0],
-      dimensions: [2, 0, 2],
+      pos: [0, -0.1, 0],
+      dimensions: [3, 0, 3],
     })
 
     scene.box({
-      pos: [-1, 0, 0],
-      dimensions: [1e-3, 0.5, 0.5],
+      pos: [-2, 0.4, 0],
+      dimensions: [0.004, 0.5, 0.5],
+    })
+
+    scene.pointLight({
+      pos: [-1, 1, 0],
+      color: [0.9, 0.9, 0.6],
     })
 
     playerMaterial = scene.sphere({
@@ -106,35 +112,19 @@ function setup() {
       radius: 0.1,
     })
 
-    scene.pointLight({
-      pos: [-0.8, 0, 0],
-      color: [0.9, 0.9, 0.6],
-      power: 0.5,
+    lights[0] = scene.pointLight({
+      color: [1, 0, 0],
+      power: 3,
     })
 
-    rgbcmyLights[0] = scene.pointLight({
-      color: [1, 0, 0],
-      power: 0.5,
-    })
-    rgbcmyLights[1] = scene.pointLight({
-      color: [1, 1, 0],
-      power: 0.5,
-    })
-    rgbcmyLights[2] = scene.pointLight({
+    lights[1] = scene.pointLight({
       color: [0, 1, 0],
-      power: 0.5,
+      power: 3,
     })
-    rgbcmyLights[3] = scene.pointLight({
-      color: [0, 1, 1],
-      power: 0.5,
-    })
-    rgbcmyLights[4] = scene.pointLight({
+
+    lights[2] = scene.pointLight({
       color: [0, 0, 1],
-      power: 0.5,
-    })
-    rgbcmyLights[5] = scene.pointLight({
-      color: [1, 0, 1],
-      power: 0.5,
+      power: 3,
     })
   })
 
@@ -162,24 +152,27 @@ function setup() {
 
     vec3 lighting = calcLighting(ro, rd);
 
-    lighting = round(lighting * 10.) / 10.;
     fragColor = vec4(lighting, 1.);
   `)
 
   controlsListener()
   noSmooth()
   player.startPhysics()
+
+  setInterval(() => {
+    fps = frameRate().toFixed(0)
+  }, 500)
 }
 
-let FPS = 0
 function draw() {
   playerMaterial.pos = player.pos
 
-  for (let i = 0; i < rgbcmyLights.length; i++) {
-    rgbcmyLights[i].pos[0] =
-      cos(frameCount / 100 + (i * TWO_PI) / rgbcmyLights.length) * 2
-    rgbcmyLights[i].pos[2] =
-      sin(frameCount / 100 + (i * TWO_PI) / rgbcmyLights.length) * 2
+  for (let i = 0; i < lights.length; i++) {
+    lights[i].pos = [
+      cos(frameCount / 200 + (i * TWO_PI) / lights.length) * 3,
+      2,
+      sin(frameCount / 200 + (i * TWO_PI) / lights.length) * 3,
+    ]
   }
 
   const graphics = tina.update({
@@ -189,14 +182,12 @@ function draw() {
 
   image(graphics, 0, 0, width, height)
 
-  if (frameCount % 30 === 0) FPS = frameRate()
-
   fill('#00ff00')
   noStroke()
   ellipse(width / 2, height / 2, 4, 4)
   textSize(16)
   stroke('#000')
-  text(`FPS: ${FPS.toFixed(0)}`, 10, 30)
+  text(`FPS: ${fps}`, 10, 30)
 }
 
 function controlsListener() {
@@ -230,7 +221,7 @@ function windowResized() {
   if (resizeTimeout) clearTimeout(resizeTimeout)
   resizeTimeout = setTimeout(() => {
     resizeCanvas(windowWidth, windowHeight)
-    tina.resize(240 * (width / height), 240)
+    tina.resize(width, height)
     resizeTimeout = null
   }, 100)
 }
