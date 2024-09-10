@@ -28,7 +28,7 @@ function Material({
   shape = 'box',
   radius = 0.1,
   dimensions = [0.1, 0.1, 0.1],
-  shininess = 10,
+  shininess = 1,
 }) {
   this.pos = pos
   this.color = color
