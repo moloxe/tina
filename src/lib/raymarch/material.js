@@ -7,6 +7,7 @@ const buildMaterials = (scene) => /* glsl */ `
 
 struct Material {
   vec3 pos;
+  vec3 rotation;
   vec3 color;
   float shininess;
   int shape; // 1: sphere, 2: box
@@ -24,6 +25,7 @@ ${buildLights(scene.pointLights.length)}
 // TODO: Add more shapes and rotation
 function Material({
   pos = [0, 0, 0],
+  rotation = [0, 0, 0],
   color = [1, 1, 1],
   shape = 'box',
   radius = 0.1,
@@ -31,6 +33,7 @@ function Material({
   shininess = 1,
 }) {
   this.pos = pos
+  this.rotation = rotation
   this.color = color
   this.shape = shape
   this.radius = radius
@@ -38,6 +41,7 @@ function Material({
   this.shininess = shininess
   this.getUniforms = (index) => ({
     [`materials[${index}].pos`]: this.pos,
+    [`materials[${index}].rotation`]: this.rotation,
     [`materials[${index}].color`]: this.color,
     [`materials[${index}].shape`]: MATERIAL_ID[this.shape],
     [`materials[${index}].radius`]: this.radius,

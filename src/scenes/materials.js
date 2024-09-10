@@ -26,28 +26,30 @@ function setup() {
     })
 
     scene.box({
-      pos: [0, -0.5, 0],
-      dimensions: [0.3, 0.3, 0.3],
+      pos: [0, -0.2, 0],
+      rotation: [0, 0, -0.5],
+      dimensions: [0.3, 0.01, 0.3],
     })
 
     scene.box({
       pos: [0, -0.5, 0],
-      dimensions: [2, 1e-3, 2],
+      dimensions: [2, 0, 2],
     })
 
     scene.box({
       pos: [-1, 0, 0],
-      dimensions: [1e-3, 0.5, 0.5],
+      dimensions: [0.01, 0.5, 0.5],
     })
 
     skyblueLight = scene.pointLight({
       color: [0.4, 0.8, 0.8],
-      power: 0.5,
+      power: 3,
     })
 
     scene.pointLight({
       pos: [-0.8, 0, 0],
       color: [0.8, 0.8, 0.4],
+      power: 0.5,
     })
   })
 
@@ -77,7 +79,7 @@ let FPS = 0
 function draw() {
   const angle = frameCount / 200
 
-  skyblueLight.pos = [0.8 * cos(angle), 0, 0.8 * sin(angle)]
+  skyblueLight.pos = [2 * cos(angle), 0.5, 2 * sin(angle)]
 
   const graphics = tina.update({
     cam,

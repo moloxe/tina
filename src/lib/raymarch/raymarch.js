@@ -15,10 +15,11 @@ SdScene sdScene(vec3 p) {
   for (int i = 0; i < materials.length(); i++) {
     Material m = materials[i];
     float d = 1e10;
+    vec3 pos = (p - m.pos) * rotate(m.rotation);
     if (m.shape == 1) {
-      d = sdSphere(p - m.pos, m.radius);
+      d = sdSphere(pos, m.radius);
     } else if (m.shape == 2) {
-      d = sdBox(p - m.pos, m.dimensions);
+      d = sdBox(pos, m.dimensions);
     }
     if (d < sd.distance) {
       sd.distance = d;
