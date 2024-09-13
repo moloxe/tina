@@ -50,8 +50,11 @@ RayMarch rm = rayMarchCollision(ro, rd);
 
 vec3 color = vec3(.5);
 
-if (rm.materialIndex != -1)
+if (rm.materialIndex != -1) {
+  // Normals ​​can be used to calculate the collision direction
+  // They are mapped (0-255) for use with P5js
   color = (calcSceneNormal(rm.pos) + 1.) / 2.;
+}
 
 fragColor = vec4(color, 1.);
 `
