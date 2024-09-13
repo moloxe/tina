@@ -5,6 +5,7 @@ import TINA_RAYMARCH_LIGHT from '@src/lib/raymarch/light?raw'
 import TINA_RAYMARCH_MATERIAL from '@src/lib/raymarch/material?raw'
 import TINA_RAYMARCH_SCENE from '@src/lib/raymarch/scene?raw'
 import TINA_RAYMARCH from '@src/lib/raymarch/raymarch?raw'
+import TINA_RAYMARCH_PHYSICS from '@src/lib/raymarch/physics.capsule?raw'
 import '@src/assets/styles/main.css'
 
 interface Props {
@@ -16,13 +17,14 @@ const title = Astro.props.title || 'Tina'
 const SKETCH = Astro.props.sketch
 const SCRIPT = [
   TINA_COMMON,
+  TINA_RAYMARCH_PHYSICS,
   TINA_RAYMARCH,
   TINA_RAYMARCH_MATERIAL,
   TINA_RAYMARCH_SCENE,
   TINA_RAYMARCH_LIGHT,
   TINA,
   SKETCH,
-].join('\n')
+  ].join('\n')
 ---
 
 <!doctype html>
