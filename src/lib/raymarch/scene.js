@@ -21,6 +21,16 @@ function Scene() {
     )
     return this.materials[index]
   }
+  this.capsule = function (props) {
+    const index = this.materials.length
+    this.materials.push(
+      new Material({
+        ...props,
+        shape: 'capsule',
+      })
+    )
+    return this.materials[index]
+  }
   this.pointLight = function (props) {
     const index = this.pointLights.length
     this.pointLights.push(new PointLight(props))
