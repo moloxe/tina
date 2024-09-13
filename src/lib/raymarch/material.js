@@ -1,6 +1,8 @@
+// TODO: Add more shapes
 const MATERIAL_ID = {
   sphere: 1,
   box: 2,
+  capsule: 15,
 }
 
 const buildMaterials = (scene) => /* glsl */ `
@@ -13,6 +15,8 @@ struct Material {
   int shape; // 1: sphere, 2: box
   float radius;
   vec3 dimensions;
+  vec3 start;
+  vec3 end;
 };
 
 uniform Material materials[${scene.materials.length}];
@@ -22,7 +26,6 @@ ${TINA_RAYMARCH}
 ${buildLights(scene.pointLights.length)}
 `
 
-// TODO: Add more shapes and rotation
 function Material({
   pos = [0, 0, 0],
   rotation = [0, 0, 0],

@@ -20,6 +20,8 @@ SdScene sdScene(vec3 p) {
       d = sdSphere(pos, m.radius);
     } else if (m.shape == 2) {
       d = sdBox(pos, m.dimensions);
+    } else if(m.shape == 15) {
+      d = sdCapsule(pos, m.start, m.end, m.radius);
     }
     if (d < sd.distance) {
       sd.distance = d;
