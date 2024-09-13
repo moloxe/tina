@@ -34,6 +34,8 @@ function Material({
   radius = 0.1,
   dimensions = [0.1, 0.1, 0.1],
   shininess = 1,
+  start = [0, 0, 0],
+  end = [0, 0, 0],
 }) {
   this.pos = pos
   this.rotation = rotation
@@ -42,6 +44,8 @@ function Material({
   this.radius = radius
   this.dimensions = dimensions
   this.shininess = shininess
+  this.start = start
+  this.end = end
   this.getUniforms = (index) => ({
     [`materials[${index}].pos`]: this.pos,
     [`materials[${index}].rotation`]: this.rotation,
@@ -50,5 +54,7 @@ function Material({
     [`materials[${index}].radius`]: this.radius,
     [`materials[${index}].dimensions`]: this.dimensions,
     [`materials[${index}].shininess`]: this.shininess,
+    [`materials[${index}].start`]: this.start,
+    [`materials[${index}].end`]: this.end,
   })
 }
