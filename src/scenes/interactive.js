@@ -5,11 +5,11 @@ function Player() {
   this.onTheFloor = true
   this.body = new CapsulePhysics({
     pos: [...initialPos],
-    end: [0, -0.1, 0],
+    end: [0, -0.2, 0],
     radius: 0.05,
     collisionGroup: 1,
   })
-  this.material = null
+  this.materials = []
 
   this.maxVel = 0.02
   this.acc = 0.003
@@ -86,7 +86,8 @@ function Player() {
 
     if (this.body.pos[1] < -5) this.body.pos = [...initialPos] // fall
 
-    this.material.pos = this.body.pos
+    this.materials[0].pos = this.body.pos
+    this.materials[1].pos = this.body.pos
 
     return collisions
   }
@@ -105,9 +106,15 @@ function setup() {
   player = new Player()
 
   tina.setScene((scene) => {
-    player.material = scene.capsule({
+    player.materials[0] = scene.sphere({
       shininess: 512,
-      radius: player.body.radius * 2,
+      radius: 0.08,
+      collisionGroup: player.body.collisionGroup,
+    })
+    player.materials[1] = scene.capsule({
+      shininess: 512,
+      color: [1, 0, 1],
+      radius: player.body.radius,
       end: player.body.end,
       collisionGroup: player.body.collisionGroup,
     })
