@@ -5,27 +5,33 @@ const MATERIAL_ID = {
   capsule: 15,
 }
 
-const buildMaterials = (scene) => /* glsl */ `
+const buildMaterials = (tina) => {
+  if (tina.mode !== TINA_SCENE) return ''
 
-struct Material {
-  vec3 pos;
-  vec3 rotation;
-  vec3 color;
-  float shininess;
-  int shape; // 1: sphere, 2: box
-  float radius;
-  vec3 dimensions;
-  vec3 start;
-  vec3 end;
-  int collisionGroup;
-};
+  const LIGHTS_SHADER =
+    tina.pointLights.length > 0 ? buildLights(tina.pointLights.length) : ''
 
-uniform Material materials[${scene.materials.length}];
+  return /* glsl */ `
+    struct Material {
+      vec3 pos;
+      vec3 rotation;
+      vec3 color;
+      float shininess;
+      int shape; // 1: sphere, 2: box
+      float radius;
+      vec3 dimensions;
+      vec3 start;
+      vec3 end;
+      int collisionGroup;
+    };
 
-${TINA_RAYMARCH}
+    uniform Material materials[${tina.materials.length}];
 
-${buildLights(scene.pointLights.length)}
+    ${TINA_RAYMARCH}
+
+    ${LIGHTS_SHADER}
 `
+}
 
 function Material({
   pos = [0, 0, 0],

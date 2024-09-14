@@ -1,6 +1,38 @@
+const TINA_RAYMARCH_SCENE = /* glsl */ `
+struct ScemeCam {
+  vec3 pos;
+  vec3 spherical;
+};
+uniform ScemeCam sceneCam;
+
+---
+
+uv = uv * 2. - 1.;
+uv.x *= width/height;
+
+vec3 pos = sceneCam.pos;
+vec3 spherical = sceneCam.spherical;
+
+vec3 ro = vec3(0.);
+ro.z += spherical.x;
+ro *= rotateX(spherical.z);
+ro *= rotateY(spherical.y);
+ro += pos;
+
+vec3 rd = normalize(vec3(uv, -1.));
+rd *= rotateX(spherical.z);
+rd *= rotateY(spherical.y);
+
+vec3 lighting = calcLighting(ro, rd);
+
+fragColor = vec4(lighting, 1.);
+`
+
 function Scene() {
   this.materials = []
   this.pointLights = []
+  this.pos = [0, 0, 0]
+  this.spherical = [0, 0, 0]
   this.box = function (props) {
     const index = this.materials.length
     this.materials.push(
@@ -44,6 +76,8 @@ function Scene() {
     this.pointLights.forEach((pointLight, index) => {
       Object.assign(uniforms, pointLight.getUniforms(index))
     })
+    uniforms['sceneCam.pos'] = this.pos
+    uniforms['sceneCam.spherical'] = this.spherical
     return uniforms
   }
 }

@@ -71,10 +71,13 @@ function CapsulePhysics({
   this.end = end
   this.radius = radius
   this.collisionGroup = collisionGroup
-  this.physics = new Tina(180, 180)
-  this.build = (scene) => {
-    if (!scene) throw new Error('CapsulePhysics requires a scene')
-    this.physics.scene = scene
+  this.physics = new Tina(180, 180, TINA_SCENE)
+  this.build = (tina) => {
+    if (tina?.mode !== TINA_SCENE)
+      throw new Error(
+        'CapsulePhysics requires a Tina instance with TINA_SCENE mode'
+      )
+    this.physics.materials = tina.materials
     this.physics.build(TINA_RAYMARCH_PHYSICS_CAPSULE)
   }
   this.getCollisionMap = () => {

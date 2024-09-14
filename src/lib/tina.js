@@ -1,14 +1,16 @@
 // heavily p5js based shader helper
 
+const TINA_SCENE = 'TINA_SCENE'
+
 const vertShader = `#version 300 es
 in vec3 aPosition;
-out vec2 pos;
+out vec2 tinaUV;
 void main() {
-  pos = aPosition.xy;
+  tinaUV = aPosition.xy;
   gl_Position = vec4(aPosition * 2.0 - 1.0, 1.0);
 }`
 
-function FragBuilder(scene) {
+function FragBuilder(tina) {
   this.mainContent = `fragColor = vec4(1.);`
   this.head = ``
   this.getFrag = () => `#version 300 es
@@ -16,42 +18,40 @@ function FragBuilder(scene) {
 
     ${TINA_COMMON}
 
-    in vec2 pos;
+    in vec2 tinaUV;
     uniform float time;
-    uniform float width;
+    uniform float width; // TODO: Use vec2 screen instead
     uniform float height;
     out vec4 fragColor;
 
-    ${scene !== null ? buildMaterials(scene) : ''}
+    ${buildMaterials(tina)}
 
     ${this.head}
 
     void main() {
-      vec2 uv = pos;
+      vec2 uv = tinaUV;
       ${this.mainContent}
     }
   `
 }
 
-function Tina(width, height) {
+function Tina(width, height, TINA_MODE) {
   this.width = width
   this.height = height
+  this.mode = TINA_MODE
+
+  if (this.mode === TINA_SCENE) {
+    const scene = new Scene()
+    Object.assign(this, scene)
+  }
+
   const graphics = createGraphics(this.width, this.height, WEBGL)
   graphics.pixelDensity(1)
 
   let shader, startTime
 
-  this.scene = null
-
-  this.setScene = (sceneBuilder) => {
-    if (this.scene) throw new Error('Scene already set')
-    if (this.shader) throw new Error('Shader already built')
-    this.scene = new Scene()
-    sceneBuilder(this.scene)
-    if (this.scene.pointLights.length === 0)
-      throw new Error('At least one point light is required when using a scene')
-    if (this.scene.materials.length === 0)
-      throw new Error('At least one material is required when using a scene')
+  this.buildScene = () => {
+    this.build(TINA_RAYMARCH_SCENE)
   }
 
   this.resize = (width, height) => {
@@ -61,7 +61,7 @@ function Tina(width, height) {
   }
 
   this.build = (content = '') => {
-    const fragBuilder = new FragBuilder(this.scene)
+    const fragBuilder = new FragBuilder(this)
     startTime = new Date().getTime()
 
     if (!content.includes('---')) content = `---${content}`
@@ -81,8 +81,8 @@ function Tina(width, height) {
   this.update = (uniforms = {}) => {
     if (!shader) throw new Error('Missed build: call Tina.build()')
 
-    if (this.scene) {
-      uniforms = { ...uniforms, ...this.scene.getUniforms() }
+    if (this.mode === TINA_SCENE) {
+      uniforms = { ...uniforms, ...this.getUniforms() }
     }
 
     const time = new Date().getTime() - startTime
