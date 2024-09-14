@@ -51,7 +51,7 @@ vec3 calcLighting(vec3 ro, vec3 rd) {
   vec3 viewDir = -rd;
   Material material = materials[rm.materialIndex];
 
-  vec3 normal = calcSceneNormal(pos);
+  vec3 normal = calcSceneNormal(pos, -1);
   const float minLight = 0.;
   vec3 ambientColor = material.color * minLight;
   vec3 diffuseColor = material.color;

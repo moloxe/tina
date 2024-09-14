@@ -7,6 +7,7 @@ function Player() {
     pos: [...initialPos],
     end: [0, -0.1, 0],
     radius: 0.05,
+    collisionGroup: 1,
   })
   this.material = null
 
@@ -106,8 +107,9 @@ function setup() {
   tina.setScene((scene) => {
     player.material = scene.capsule({
       shininess: 512,
-      radius: player.body.radius * 1,
+      radius: player.body.radius * 2,
       end: player.body.end,
+      collisionGroup: player.body.collisionGroup,
     })
 
     scene.sphere({

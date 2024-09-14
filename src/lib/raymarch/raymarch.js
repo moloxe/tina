@@ -10,10 +10,11 @@ struct SdScene {
   int materialIndex;
 };
 
-SdScene sdScene(vec3 p) {
+SdScene sdScene(vec3 p, int excludeGroup) {
   SdScene sd = SdScene(1e10, -1);
   for (int i = 0; i < materials.length(); i++) {
     Material m = materials[i];
+    if(excludeGroup != -1 && m.collisionGroup == excludeGroup) continue;
     float d = 1e10;
     vec3 pos = (p - m.pos) * rotate(m.rotation);
     if (m.shape == 1) {
@@ -36,7 +37,7 @@ RayMarch rayMarch(vec3 ro, vec3 rd) {
   float z = 0.;
   for(int i = 0; i < 1024; i++) {
     rm.pos = ro + z * rd;
-    SdScene sd = sdScene(rm.pos);
+    SdScene sd = sdScene(rm.pos, -1);
     float distance = abs(sd.distance);
     if(distance < 1e-4) {
       rm.materialIndex = sd.materialIndex;
@@ -50,13 +51,13 @@ RayMarch rayMarch(vec3 ro, vec3 rd) {
   return rm;
 }
 
-vec3 calcSceneNormal(vec3 p) {
+vec3 calcSceneNormal(vec3 p, int excludeGroup) {
   float eps = 1e-4;
   vec3 h = vec3(eps, 0.0, 0.0);
   return normalize(vec3(
-    sdScene(p + h.xyy).distance - sdScene(p - h.xyy).distance,
-    sdScene(p + h.yxy).distance - sdScene(p - h.yxy).distance,
-    sdScene(p + h.yyx).distance - sdScene(p - h.yyx).distance
+    sdScene(p + h.xyy, excludeGroup).distance - sdScene(p - h.xyy, excludeGroup).distance,
+    sdScene(p + h.yxy, excludeGroup).distance - sdScene(p - h.yxy, excludeGroup).distance,
+    sdScene(p + h.yyx, excludeGroup).distance - sdScene(p - h.yyx, excludeGroup).distance
   ));
 }
 
