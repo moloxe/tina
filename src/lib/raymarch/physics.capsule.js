@@ -71,7 +71,7 @@ function CapsulePhysics({
   this.end = end
   this.radius = radius
   this.collisionGroup = collisionGroup
-  this.physics = new Tina(180, 180, TINA_SCENE)
+  this.physics = new Tina(360, 360, TINA_SCENE)
   this.build = (tina) => {
     if (tina?.mode !== TINA_SCENE)
       throw new Error(
