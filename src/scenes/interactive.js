@@ -101,106 +101,78 @@ let player,
 function setup() {
   createCanvas(windowWidth, windowHeight)
 
-  tina = new Tina(...getResolution())
-
+  tina = new Tina(...getResolution(), TINA_SCENE)
   player = new Player()
 
-  tina.setScene((scene) => {
-    player.materials[0] = scene.sphere({
-      shininess: 512,
-      radius: 0.08,
-      collisionGroup: player.body.collisionGroup,
-    })
-    player.materials[1] = scene.capsule({
-      shininess: 512,
-      color: [1, 0, 1],
-      radius: player.body.radius,
-      end: player.body.end,
-      collisionGroup: player.body.collisionGroup,
-    })
-
-    scene.sphere({
-      shininess: 512,
-      color: [1, 1, 1],
-      pos: [0, 0.2, 0],
-    })
-
-    scene.box({
-      rotation: [-0.6, 0, 0],
-      pos: [1, 0, 0],
-      dimensions: [0.2, 0.01, 0.3],
-    })
-
-    scene.box({
-      rotation: [0, 0, 0],
-      pos: [1, 0.168, -0.54],
-      dimensions: [0.2, 0.01, 0.3],
-    })
-
-    scene.box({
-      pos: [0, 0.05, 0],
-      dimensions: [0.3, 0.05, 0.3],
-    })
-
-    scene.box({
-      pos: [0, -0.1, 0],
-      dimensions: [3, 0, 3],
-    })
-
-    scene.box({
-      pos: [-2, 0.4, 0],
-      dimensions: [0.004, 0.5, 0.5],
-    })
-
-    scene.pointLight({
-      pos: [-1, 1, 0],
-      color: [0.9, 0.9, 0.6],
-    })
-
-    lights[0] = scene.pointLight({
-      color: [1, 0, 0],
-      power: 3,
-    })
-
-    lights[1] = scene.pointLight({
-      color: [0, 1, 0],
-      power: 3,
-    })
-
-    lights[2] = scene.pointLight({
-      color: [0, 0, 1],
-      power: 3,
-    })
+  player.materials[0] = tina.sphere({
+    shininess: 512,
+    radius: 0.08,
+    collisionGroup: player.body.collisionGroup,
   })
 
-  player.body.build(tina.scene)
+  player.materials[1] = tina.capsule({
+    shininess: 512,
+    color: [1, 0, 1],
+    radius: player.body.radius,
+    end: player.body.end,
+    collisionGroup: player.body.collisionGroup,
+  })
 
-  tina.build(/* glsl */ `
-    struct Player {
-      vec3 pos;
-      vec3 cam;
-    };
-    uniform Player player;
+  tina.sphere({
+    shininess: 512,
+    color: [1, 1, 1],
+    pos: [0, 0.2, 0],
+  })
 
-    ---
+  tina.box({
+    rotation: [-0.6, 0, 0],
+    pos: [1, 0, 0],
+    dimensions: [0.2, 0.01, 0.3],
+  })
 
-    uv = uv * 2. - 1.;
-    uv.x *= width/height;
+  tina.box({
+    rotation: [0, 0, 0],
+    pos: [1, 0.168, -0.54],
+    dimensions: [0.2, 0.01, 0.3],
+  })
 
-    vec3 cam = player.cam;
-    vec3 ro = vec3(0.);
-    ro.z += cam.x;
-    ro *= rotateX(cam.z);
-    ro *= rotateY(cam.y);
-    ro += player.pos;
-    vec3 rd = normalize(vec3(uv, -1.));
-    rd *= rotateX(cam.z);
-    rd *= rotateY(cam.y);
+  tina.box({
+    pos: [0, 0.05, 0],
+    dimensions: [0.3, 0.05, 0.3],
+  })
 
-    vec3 lighting = calcLighting(ro, rd);
+  tina.box({
+    pos: [0, -0.1, 0],
+    dimensions: [3, 0, 3],
+  })
 
-    fragColor = vec4(lighting, 1.);
-  `)
+  tina.box({
+    pos: [-2, 0.4, 0],
+    dimensions: [0.004, 0.5, 0.5],
+  })
+
+  tina.pointLight({
+    pos: [-1, 1, 0],
+    color: [0.9, 0.9, 0.6],
+  })
+
+  lights[0] = tina.pointLight({
+    color: [1, 0, 0],
+    power: 3,
+  })
+
+  lights[1] = tina.pointLight({
+    color: [0, 1, 0],
+    power: 3,
+  })
+
+  lights[2] = tina.pointLight({
+    color: [0, 0, 1],
+    power: 3,
+  })
+
+  player.body.build(tina)
+  tina.buildScene()
 
   controlsListener()
   noSmooth()
@@ -219,11 +191,10 @@ function draw() {
     ]
   }
 
-  const graphics = tina.update({
-    ['player.pos']: player.body.pos,
-    ['player.cam']: player.cam,
-  })
+  tina.pos = player.body.pos
+  tina.spherical = player.cam
 
+  const graphics = tina.update()
   const collisions = player.updatePhysics()
 
   image(graphics, 0, 0, width, height)
@@ -232,10 +203,10 @@ function draw() {
   fill('#00ff00')
   noStroke()
   ellipse(width / 2, height / 2, 4, 4)
-  textSize(16)
+  textSize(12)
   stroke('#000')
   text(`FPS: ${fps}`, 10, 30)
-  text(`Collision map`, 5, height / 2 + 20)
+  text(`Collisions`, 10, height / 2 + 20)
 }
 
 function controlsListener() {
@@ -262,6 +233,14 @@ function mouseMoved() {
   if (!fullscreen()) return
   player.cam[1] -= movedX / 300
   player.cam[2] -= movedY / 300
+}
+
+function mouseWheel(event) {
+  if (event.delta > 0) {
+    tina.spherical[0] += 0.01
+  } else {
+    tina.spherical[0] -= 0.01
+  }
 }
 
 function getResolution() {

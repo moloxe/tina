@@ -1,78 +1,57 @@
 let tina, skyblueLight
-const cam = [2, 0, 0] // spherical coordinates
+const spherical = [2, 0, 0]
 
 function mouseDragged() {
-  cam[1] -= movedX / 100
-  cam[2] -= movedY / 100
+  spherical[1] -= movedX / 100
+  spherical[2] -= movedY / 100
 }
 
 function mouseWheel(event) {
   if (event.delta > 0) {
-    cam[0] += 0.03
+    spherical[0] += 0.03
   } else {
-    cam[0] -= 0.03
+    spherical[0] -= 0.03
   }
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
 
-  tina = new Tina(width, height)
+  tina = new Tina(width, height, TINA_SCENE)
 
-  tina.setScene((scene) => {
-    scene.sphere({
-      shininess: 512,
-      color: [1, 0, 1],
-    })
-
-    scene.box({
-      pos: [0, -0.2, 0],
-      rotation: [0, 0, -0.5],
-      dimensions: [0.3, 0.01, 0.3],
-    })
-
-    scene.box({
-      pos: [0, -0.5, 0],
-      dimensions: [2, 0, 2],
-    })
-
-    scene.box({
-      pos: [-1, 0, 0],
-      dimensions: [0.01, 0.5, 0.5],
-    })
-
-    skyblueLight = scene.pointLight({
-      color: [0.4, 0.8, 0.8],
-      power: 3,
-    })
-
-    scene.pointLight({
-      pos: [-0.8, 0, 0],
-      color: [0.8, 0.8, 0.4],
-      power: 0.5,
-    })
+  tina.sphere({
+    shininess: 512,
+    color: [1, 0, 1],
   })
 
-  tina.build(/* glsl */ `
-    uniform vec3 cam;
+  tina.box({
+    pos: [0, -0.2, 0],
+    rotation: [0, 0, -0.5],
+    dimensions: [0.3, 0.01, 0.3],
+  })
 
-    ---
+  tina.box({
+    pos: [0, -0.5, 0],
+    dimensions: [2, 0, 2],
+  })
 
-    uv = uv * 2. - 1.;
-    uv.x *= width/height;
+  tina.box({
+    pos: [-1, 0, 0],
+    dimensions: [0.01, 0.5, 0.5],
+  })
 
-    vec3 ro = vec3(0.);
-    ro.z += cam.x;
-    ro *= rotateX(cam.z);
-    ro *= rotateY(cam.y);
-    vec3 rd = normalize(vec3(uv, -1.));
-    rd *= rotateX(cam.z);
-    rd *= rotateY(cam.y);
+  skyblueLight = tina.pointLight({
+    color: [0.4, 0.8, 0.8],
+    power: 3,
+  })
 
-    vec3 lighting = calcLighting(ro, rd);
+  tina.pointLight({
+    pos: [-0.8, 0, 0],
+    color: [0.8, 0.8, 0.4],
+    power: 0.5,
+  })
 
-    fragColor = vec4(lighting, 1.);
-  `)
+  tina.buildScene()
 }
 
 let FPS = 0
@@ -80,10 +59,9 @@ function draw() {
   const angle = frameCount / 200
 
   skyblueLight.pos = [2 * cos(angle), 0.5, 2 * sin(angle)]
+  tina.spherical = spherical
 
-  const graphics = tina.update({
-    cam,
-  })
+  const graphics = tina.update()
 
   image(graphics, 0, 0, width, height)
 
