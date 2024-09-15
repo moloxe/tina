@@ -1,5 +1,5 @@
-// TODO: Add more shapes
 const MATERIAL_ID = {
+  // TODO: Add more shapes from https://iquilezles.org/articles/distfunctions/
   sphere: 1,
   box: 2,
   capsule: 15,
@@ -23,6 +23,7 @@ const buildMaterials = (tina) => {
       vec3 start;
       vec3 end;
       int collisionGroup;
+      float smoothFactor;
     };
 
     uniform Material materials[${tina.materials.length}];
@@ -44,6 +45,7 @@ function Material({
   start = [0, 0, 0],
   end = [0, 0, 0],
   collisionGroup = -1,
+  smoothFactor = 0,
 }) {
   this.pos = pos
   this.rotation = rotation
@@ -66,5 +68,6 @@ function Material({
     [`materials[${index}].start`]: this.start,
     [`materials[${index}].end`]: this.end,
     [`materials[${index}].collisionGroup`]: this.collisionGroup,
+    [`materials[${index}].smoothFactor`]: smoothFactor,
   })
 }

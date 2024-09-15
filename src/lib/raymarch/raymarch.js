@@ -10,23 +10,42 @@ struct SdScene {
   int materialIndex;
 };
 
+float sdMaterial(vec3 pos, Material m) {
+  float d = 1e10;
+  if (m.shape == 1) {
+    d = sdSphere(pos, m.radius);
+  } else if (m.shape == 2) {
+    d = sdBox(pos, m.dimensions);
+  } else if(m.shape == 15) {
+    d = sdCapsule(pos, m.start, m.end, m.radius);
+  }
+  return d;
+}
+
 SdScene sdScene(vec3 p, int excludeGroup) {
   SdScene sd = SdScene(1e10, -1);
+
   for (int i = 0; i < materials.length(); i++) {
     Material m = materials[i];
+
     if(excludeGroup != -1 && m.collisionGroup == excludeGroup) continue;
-    float d = 1e10;
+
     vec3 pos = (p - m.pos) * rotate(m.rotation);
-    if (m.shape == 1) {
-      d = sdSphere(pos, m.radius);
-    } else if (m.shape == 2) {
-      d = sdBox(pos, m.dimensions);
-    } else if(m.shape == 15) {
-      d = sdCapsule(pos, m.start, m.end, m.radius);
+    float d = sdMaterial(pos, m);
+
+    int materialIndex = i; // When using smooth, only the props of the first material are applied
+
+    while(m.smoothFactor > 0. && i < materials.length()) { // This is too dangerous 💀
+      Material nextMaterial = materials[i + 1];
+      float d2 = sdMaterial(pos, nextMaterial);
+      d = opSmoothUnion(d, d2, m.smoothFactor);
+      m = nextMaterial;
+      i++;
     }
+
     if (d < sd.distance) {
       sd.distance = d;
-      sd.materialIndex = i;
+      sd.materialIndex = materialIndex;
     }
   }
   return sd;

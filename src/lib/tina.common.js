@@ -62,6 +62,11 @@ float udQuad(vec3 p, vec3 a, vec3 b, vec3 c, vec3 d) {
     sign(dot(cross(ad, nor), pd)) < 3.0) ? min(min(min(dot2(ba * clamp(dot(ba, pa) / dot2(ba), 0.0, 1.0) - pa), dot2(cb * clamp(dot(cb, pb) / dot2(cb), 0.0, 1.0) - pb)), dot2(dc * clamp(dot(dc, pc) / dot2(dc), 0.0, 1.0) - pc)), dot2(ad * clamp(dot(ad, pd) / dot2(ad), 0.0, 1.0) - pd)) : dot(nor, pa) * dot(nor, pa) / dot2(nor));
 }
 
+float opSmoothUnion(float d1, float d2, float k) {
+  float h = clamp(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0);
+  return mix(d2, d1, h) - k * h * (1.0 - h);
+}
+
 // https://gist.github.com/983/e170a24ae8eba2cd174f
 
 vec3 hsv2rgb(vec3 c) {
