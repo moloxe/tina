@@ -33,19 +33,24 @@ SdScene sdScene(vec3 p, int excludeGroup) {
     vec3 pos = (p - m.pos) * rotate(m.rotation);
     float d = sdMaterial(pos, m);
 
-    int materialIndex = i; // When using smooth, only the props of the first material are applied
-
-    while(m.smoothFactor > 0. && i < materials.length()) { // This is too dangerous 💀
-      Material nextMaterial = materials[i + 1];
-      float d2 = sdMaterial(pos, nextMaterial);
-      d = opSmoothUnion(d, d2, m.smoothFactor);
-      m = nextMaterial;
-      i++;
-    }
-
     if (d < sd.distance) {
       sd.distance = d;
-      sd.materialIndex = materialIndex;
+      sd.materialIndex = i;
+    }
+
+    while(m.smoothFactor > 0. && i < materials.length()) { // This is too dangerous 💀
+      Material m2 = materials[i + 1];
+      pos = (p - m2.pos) * rotate(m2.rotation);
+      float d2 = sdMaterial(pos, m2);
+      d = opSmoothUnion(d, d2, m.smoothFactor);
+
+      if (d < sd.distance) {
+        sd.distance = d;
+        sd.materialIndex = i;
+      }
+
+      m = m2;
+      i++;
     }
   }
   return sd;
