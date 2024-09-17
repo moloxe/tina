@@ -45,12 +45,12 @@ bool lightHits(vec3 lightOrigin, vec3 target) {
   return false;
 }
 
-vec3 calcLighting(vec3 ro, vec3 rd) {
+vec3 calcLightning(vec3 ro, vec3 rd) {
   RayMarch rm = rayMarch(ro, rd);
-  vec3 totalLighting = vec3(0.);
+  vec3 totalLightning = vec3(0.);
 
   if(rm.materialIndex == -1) {
-    return totalLighting;
+    return totalLightning;
   }
 
   vec3 pos = rm.pos;
@@ -63,14 +63,14 @@ vec3 calcLighting(vec3 ro, vec3 rd) {
 
   for(int i = 0; i < pointLights.length(); i++) {
     if(lightHits(pointLights[i].pos, pos)) continue;
-    vec3 lighting = applyPointLight(
+    vec3 lightning = applyPointLight(
       pos, diffuseColor, shininess,
       normal, pointLights[i], viewDir
     );
-    totalLighting = max(totalLighting, lighting);
+    totalLightning = max(totalLightning, lightning);
   }
 
-  return totalLighting;
+  return totalLightning;
 }
 `
 

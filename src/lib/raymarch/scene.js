@@ -27,7 +27,7 @@ vec3 rd = normalize(vec3(uv, -focalLength));
 rd *= rotateX(spherical.z);
 rd *= rotateY(spherical.y);
 
-vec3 lighting = calcLighting(ro, rd);
+vec3 lighting = calcLightning(ro, rd);
 
 fragColor = vec4(lighting, 1.);
 `
