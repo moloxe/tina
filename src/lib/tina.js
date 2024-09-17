@@ -13,7 +13,13 @@ void main() {
 function FragBuilder(tina) {
   this.mainContent = `fragColor = vec4(1.);`
   this.head = ``
-  this.getFrag = () => `#version 300 es
+  this.getFrag = () => {
+    const MATERIALS_SHADER =
+      tina.materials.length > 0 ? buildMaterials(tina.materials.length) : ''
+    const RAYMARCH_SHADER = MATERIALS_SHADER === '' ? '' : TINA_RAYMARCH
+    const LIGHTS_SHADER =
+      tina.pointLights.length > 0 ? buildLights(tina.pointLights.length) : ''
+    return `#version 300 es
     precision mediump float;
 
     ${TINA_COMMON}
@@ -24,7 +30,9 @@ function FragBuilder(tina) {
     uniform float height;
     out vec4 fragColor;
 
-    ${buildMaterials(tina)}
+    ${MATERIALS_SHADER}
+    ${RAYMARCH_SHADER}
+    ${LIGHTS_SHADER}
 
     ${this.head}
 
@@ -33,6 +41,7 @@ function FragBuilder(tina) {
       ${this.mainContent}
     }
   `
+  }
 }
 
 function Tina(width, height, TINA_MODE) {
