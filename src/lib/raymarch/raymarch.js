@@ -84,13 +84,4 @@ vec3 calcSceneNormal(vec3 p, int excludeGroup) {
     sdScene(p + h.yyx, excludeGroup).distance - sdScene(p - h.yyx, excludeGroup).distance
   ));
 }
-
-float shotScene(vec3 origin, vec3 target) {
-  vec3 lightDir = normalize(target - origin);
-  RayMarch rm = rayMarch(
-    origin, lightDir
-  );
-  float obstacleDist = length(rm.pos - target);
-  return obstacleDist;
-}
 `

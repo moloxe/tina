@@ -9,10 +9,9 @@ struct PointLight {
 
 uniform PointLight pointLights[${POINT_LIGHTS}];
 
-const vec3 specColor = vec3(1.); // For now, white is fine
 vec3 applyPointLight(
   vec3 pos, vec3 diffuseColor, float shininess,
-  vec3 normal, vec3 ambientColor, PointLight pointLight, vec3 viewDir
+  vec3 normal, PointLight pointLight, vec3 viewDir
 ) {
   vec3 lightDir = pointLight.pos - pos;
   float distance = length(lightDir);
@@ -28,9 +27,9 @@ vec3 applyPointLight(
     specular = pow(specAngle, shininess);
   }
 
-  vec3 colorLinear = ambientColor
-    + diffuseColor * lambertian * pointLight.color * pointLight.power / distance
-    + specColor    * specular   * pointLight.color * pointLight.power / distance;
+  vec3 colorLinear = /* ambientColor + */
+    diffuseColor *    lambertian * pointLight.color * pointLight.power / distance +
+    /* specColor * */ specular   * pointLight.color * pointLight.power / distance;
 
   // const float screenGamma = 1.;
   // vec3 colorGammaCorrected = pow(colorLinear, vec3(1.0 / screenGamma));
@@ -39,12 +38,19 @@ vec3 applyPointLight(
   return colorLinear;
 }
 
+bool lightHits(vec3 lightOrigin, vec3 target) {
+  vec3 lightDir = normalize(target - lightOrigin);
+  RayMarch rm = rayMarch(lightOrigin, lightDir);
+  if(length(target - rm.pos) > 1e-3) return true;
+  return false;
+}
+
 vec3 calcLighting(vec3 ro, vec3 rd) {
   RayMarch rm = rayMarch(ro, rd);
-  vec3 lighting = vec3(0.);
+  vec3 totalLighting = vec3(0.);
 
   if(rm.materialIndex == -1) {
-    return lighting;
+    return totalLighting;
   }
 
   vec3 pos = rm.pos;
@@ -52,31 +58,19 @@ vec3 calcLighting(vec3 ro, vec3 rd) {
   Material material = materials[rm.materialIndex];
 
   vec3 normal = calcSceneNormal(pos, -1);
-  const float minLight = 0.;
-  vec3 ambientColor = material.color * minLight;
   vec3 diffuseColor = material.color;
   float shininess = material.shininess;
 
-  float visibility, obstacleDist;
-  ${new Array(POINT_LIGHTS)
-    .fill()
-    .map((_, i) => {
-      return /* glsl */ `
-        visibility = minLight;
-        obstacleDist = shotScene(pointLights[${i}].pos, pos);
-        if(obstacleDist <= 1e-2) visibility = 1.;
-        lighting = max(
-          lighting,
-          visibility * applyPointLight(
-            pos, diffuseColor, shininess,
-            normal, ambientColor, pointLights[${i}], viewDir
-          )
-        );
-      `
-    })
-    .join('')}
+  for(int i = 0; i < pointLights.length(); i++) {
+    if(lightHits(pointLights[i].pos, pos)) continue;
+    vec3 lighting = applyPointLight(
+      pos, diffuseColor, shininess,
+      normal, pointLights[i], viewDir
+    );
+    totalLighting = max(totalLighting, lighting);
+  }
 
-  return lighting;
+  return totalLighting;
 }
 `
 
