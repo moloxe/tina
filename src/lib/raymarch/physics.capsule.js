@@ -1,35 +1,23 @@
 const TINA_RAYMARCH_PHYSICS_CAPSULE = /* glsl */ `
 uniform Material capsule; // this material is not part of the scene
 
-vec3 rayMarchCapsuleSurface(vec3 ro, vec3 rd) {
-  float z = 0.;
-  vec3 pos;
-  for(int i = 0; i < 1024; i++) {
-    pos = ro + z * rd;
-    float distance = abs(
-      sdCapsule(pos - capsule.pos, capsule.start, capsule.end, capsule.radius)
-    );
-    if(distance < 1e-4) return ro + (z + 1e-3) * rd;
-    z += distance;
-  }
-  return vec3(0.); // this should never happen
-}
-
 RayMarch rayMarchCollision(vec3 ro, vec3 rd) {
   RayMarch rm = RayMarch(vec3(0.), -1);
   float z = 0.;
-  for(int i = 0; i < 1024; i++) {
+  for(int i = 0; i < 32; i++) {
     rm.pos = ro + z * rd;
     SdScene sd = sdScene(rm.pos, capsule.collisionGroup);
-    float distance = sd.distance;
-    if(distance < 1e-4) {
+    if(sd.distance < 1e-4) {
       rm.materialIndex = sd.materialIndex;
       break;
     }
-    z += distance;
-    if(z > 1e-3) {
+    float dCapsule = abs(
+      sdCapsule(rm.pos - capsule.pos, capsule.start, capsule.end, capsule.radius)
+    );
+    if(dCapsule < 1e-4) {
       break;
     }
+    z += min(dCapsule, sd.distance);
   }
   return rm;
 }
@@ -45,7 +33,6 @@ vec3 spherical = vec3(
 vec3 ro = capsule.pos;
 vec3 rd = normalize(toCartesian(spherical));
 
-ro = rayMarchCapsuleSurface(ro, rd);
 RayMarch rm = rayMarchCollision(ro, rd);
 
 vec3 color = vec3(.5);
