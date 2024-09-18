@@ -41,7 +41,7 @@ vec3 applyPointLight(
 bool lightHits(vec3 lightOrigin, vec3 target) {
   vec3 lightDir = normalize(target - lightOrigin);
   RayMarch rm = rayMarch(lightOrigin, lightDir);
-  if(length(target - rm.pos) > 1e-3) return true;
+  if(length(target - rm.pos) < 1e-2) return true;
   return false;
 }
 
@@ -62,7 +62,7 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
   float shininess = material.shininess;
 
   for(int i = 0; i < pointLights.length(); i++) {
-    if(lightHits(pointLights[i].pos, pos)) continue;
+    if(!lightHits(pointLights[i].pos, pos)) continue;
     vec3 lightning = applyPointLight(
       pos, diffuseColor, shininess,
       normal, pointLights[i], viewDir

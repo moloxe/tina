@@ -38,7 +38,7 @@ SdScene sdScene(vec3 p, int excludeGroup) {
       sd.materialIndex = i;
     }
 
-    while(m.smoothFactor > 0. && i < materials.length()) { // This is too dangerous 💀
+    while(m.smoothFactor > 0. && i + 1 < materials.length()) { // This is too dangerous 💀
       Material m2 = materials[i + 1];
       pos = (p - m2.pos) * rotate(m2.rotation);
       float d2 = sdMaterial(pos, m2);
