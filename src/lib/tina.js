@@ -71,7 +71,7 @@ function Tina(width, height, TINA_MODE) {
 
   this.build = (content = '') => {
     const fragBuilder = new FragBuilder(this)
-    startTime = new Date().getTime()
+    startTime = performance.now()
 
     if (!content.includes('---')) content = `---${content}`
 
@@ -94,7 +94,7 @@ function Tina(width, height, TINA_MODE) {
       uniforms = { ...uniforms, ...this.getUniforms() }
     }
 
-    const time = new Date().getTime() - startTime
+    const time = performance.now() - startTime
 
     shader.setUniform('time', time / 1000)
     shader.setUniform('width', this.width)
