@@ -38,6 +38,16 @@ function Scene() {
   this.pos = [0, 0, 0]
   this.spherical = [0, 0, 0]
   this.fov = 90
+  this.parent = function (props) {
+    const index = this.materials.length
+    this.materials.push(
+      new Material({
+        ...props,
+        shape: 'parent', // Not really a shape, but it's a way to group materials
+      })
+    )
+    return index
+  }
   this.box = function (props) {
     const index = this.materials.length
     this.materials.push(

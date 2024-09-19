@@ -1,4 +1,5 @@
 const MATERIAL_ID = {
+  parent: 0, // Represents a group of materials
   // TODO: Add more shapes from https://iquilezles.org/articles/distfunctions/
   sphere: 1,
   box: 2,
@@ -19,6 +20,7 @@ struct Material {
   vec3 end;
   int collisionGroup;
   float smoothFactor;
+  int parentIndex;
 };
 
 uniform Material materials[${MATERIALS}];
@@ -36,6 +38,7 @@ function Material({
   end = [0, 0, 0],
   collisionGroup = -1,
   smoothFactor = 0,
+  parentIndex = -1,
 }) {
   this.pos = pos
   this.rotation = rotation
@@ -47,6 +50,8 @@ function Material({
   this.start = start
   this.end = end
   this.collisionGroup = collisionGroup
+  this.smoothFactor = smoothFactor
+  this.parentIndex = parentIndex
   this.getUniforms = (index) => ({
     [`materials[${index}].pos`]: this.pos,
     [`materials[${index}].rotation`]: this.rotation,
@@ -59,5 +64,6 @@ function Material({
     [`materials[${index}].end`]: this.end,
     [`materials[${index}].collisionGroup`]: this.collisionGroup,
     [`materials[${index}].smoothFactor`]: smoothFactor,
+    [`materials[${index}].parentIndex`]: parentIndex,
   })
 }

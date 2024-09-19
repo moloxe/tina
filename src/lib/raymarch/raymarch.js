@@ -13,6 +13,10 @@ struct SdScene {
 float sdMaterial(vec3 p, int index) {
   Material m = materials[index];
   vec3 pos = (p - m.pos) * rotate(m.rotation);
+  if(m.parentIndex != -1) {
+    Material parent = materials[m.parentIndex];
+    pos = (pos - parent.pos) * rotate(parent.rotation);
+  }
   float d = 1e10;
   if (m.shape == 1) {
     d = sdSphere(pos, m.radius);
@@ -28,9 +32,11 @@ SdScene sdScene(vec3 p, int excludeGroup) {
   SdScene sd = SdScene(1e10, -1);
 
   for (int i = 0; i < materials.length(); i++) {
-    Material m = materials[i];
 
-    if(excludeGroup != -1 && m.collisionGroup == excludeGroup) continue;
+    if(
+      (excludeGroup != -1 && materials[i].collisionGroup == excludeGroup) ||
+      (materials[i].shape == 0)
+    ) continue;
 
     float d1 = sdMaterial(p, i);
 
