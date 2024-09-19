@@ -14,11 +14,11 @@ function FragBuilder(tina) {
   this.mainContent = `fragColor = vec4(1.);`
   this.head = ``
   this.getFrag = () => {
-    const MATERIALS_SHADER =
-      tina.materials.length > 0 ? buildMaterials(tina.materials.length) : ''
+    const nMaterials = tina?.materials?.length
+    const nLights = tina?.pointLights?.length
+    const MATERIALS_SHADER = nMaterials > 0 ? buildMaterials(nMaterials) : ''
     const RAYMARCH_SHADER = MATERIALS_SHADER === '' ? '' : TINA_RAYMARCH
-    const LIGHTS_SHADER =
-      tina.pointLights.length > 0 ? buildLights(tina.pointLights.length) : ''
+    const LIGHTS_SHADER = nLights > 0 ? buildLights(nLights) : ''
     return `#version 300 es
     precision mediump float;
 
