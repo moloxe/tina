@@ -57,8 +57,6 @@ function Tina(width, height, TINA_MODE) {
   const graphics = createGraphics(this.width, this.height, WEBGL)
   graphics.pixelDensity(1)
 
-  let shader, startTime
-
   this.buildScene = () => {
     this.build(TINA_RAYMARCH_SCENE)
   }
@@ -69,9 +67,9 @@ function Tina(width, height, TINA_MODE) {
     graphics.resizeCanvas(width, height)
   }
 
+  this.shader
   this.build = (content = '') => {
     const fragBuilder = new FragBuilder(this)
-    startTime = performance.now()
 
     if (!content.includes('---')) content = `---${content}`
 
@@ -81,27 +79,28 @@ function Tina(width, height, TINA_MODE) {
     if (mainContent) fragBuilder.mainContent = mainContent
 
     const fragShader = fragBuilder.getFrag()
-    shader = createShader(vertShader, fragShader)
+    this.shader = createShader(vertShader, fragShader)
 
-    graphics.shader(shader)
+    graphics.shader(this.shader)
     graphics.background(0)
   }
 
+  this.time = 0
   this.update = (uniforms = {}) => {
+    this.time = performance.now() / 1000
+
     if (!shader) throw new Error('Missed build: call Tina.build()')
 
     if (this.mode === TINA_SCENE) {
       uniforms = { ...uniforms, ...this.getUniforms() }
     }
 
-    const time = performance.now() - startTime
-
-    shader.setUniform('time', time / 1000)
-    shader.setUniform('width', this.width)
-    shader.setUniform('height', this.height)
+    uniforms['time'] = this.time
+    uniforms['width'] = this.width
+    uniforms['height'] = this.height
 
     Object.entries(uniforms).forEach(([uniform, value]) =>
-      shader.setUniform(uniform, value)
+      this.shader.setUniform(uniform, value)
     )
 
     graphics.rect(0, 0, 0, 0)
