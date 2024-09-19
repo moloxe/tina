@@ -27,7 +27,7 @@ function FragBuilder(tina) {
 
     in vec2 uv;
     uniform float time;
-    uniform float width; // TODO: Use vec2 screen instead
+    uniform float width;
     uniform float height;
     out vec4 fragColor;
 
