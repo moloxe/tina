@@ -154,6 +154,7 @@ function setup() {
   tina.pointLight({
     pos: [-1, 1, 0],
     color: [0.9, 0.9, 0.6],
+    computeShadows: true,
   })
 
   lights[0] = tina.pointLight({

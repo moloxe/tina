@@ -9,10 +9,11 @@ function setup() {
   tina.pointLight({
     pos: [0, 0, 2],
     color: [0.8, 0.8, 0.75],
+    power: 2,
+    computeShadows: true,
   })
   tina.pointLight({
-    pos: [1, 1, 1],
-    power: 2,
+    pos: [1, 1, 2],
   })
 
   // Head

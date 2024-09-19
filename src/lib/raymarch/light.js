@@ -5,6 +5,7 @@ struct PointLight {
   vec3 pos;
   vec3 color;
   float power;
+  bool computeShadows;
 };
 
 uniform PointLight pointLights[${POINT_LIGHTS}];
@@ -62,7 +63,10 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
   float shininess = material.shininess;
 
   for(int i = 0; i < pointLights.length(); i++) {
-    if(!lightHits(pointLights[i].pos, pos)) continue;
+    if(pointLights[i].computeShadows) {
+      bool hitByLight = lightHits(pointLights[i].pos, pos);
+      if(!hitByLight) continue;
+    }
     vec3 lightning = applyPointLight(
       pos, diffuseColor, shininess,
       normal, pointLights[i], viewDir
@@ -74,13 +78,20 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
 }
 `
 
-function PointLight({ pos, color, power }) {
-  this.pos = pos ?? [0, 0, 0]
-  this.color = color ?? [1, 1, 1]
-  this.power = power ?? 1
+function PointLight({
+  pos = [0, 0, 0],
+  color = [1, 1, 1],
+  power = 1,
+  computeShadows = false,
+}) {
+  this.pos = pos
+  this.color = color
+  this.power = power
+  this.computeShadows = computeShadows
   this.getUniforms = (index) => ({
     [`pointLights[${index}].pos`]: this.pos,
     [`pointLights[${index}].color`]: this.color,
     [`pointLights[${index}].power`]: this.power,
+    [`pointLights[${index}].computeShadows`]: this.computeShadows,
   })
 }
