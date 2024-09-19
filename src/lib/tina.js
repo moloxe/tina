@@ -4,10 +4,11 @@ const TINA_SCENE = 'TINA_SCENE'
 
 const vertShader = `#version 300 es
 in vec3 aPosition;
-out vec2 tinaUV;
+out vec2 uv;
 void main() {
-  tinaUV = aPosition.xy;
-  gl_Position = vec4(aPosition * 2.0 - 1.0, 1.0);
+  uv = aPosition.xy;
+  gl_Position = vec4(uv * 2.0 - 1.0, 0., 1.0);
+  uv.y = 1. - uv.y;
 }`
 
 function FragBuilder(tina) {
@@ -24,7 +25,7 @@ function FragBuilder(tina) {
 
     ${TINA_COMMON}
 
-    in vec2 tinaUV;
+    in vec2 uv;
     uniform float time;
     uniform float width; // TODO: Use vec2 screen instead
     uniform float height;
@@ -37,7 +38,6 @@ function FragBuilder(tina) {
     ${this.head}
 
     void main() {
-      vec2 uv = tinaUV;
       ${this.mainContent}
     }
   `

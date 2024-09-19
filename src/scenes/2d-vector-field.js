@@ -29,10 +29,10 @@ function setup() {
 
     ---
 
-    uv = uv.xy * 2. - 1.;
-    uv.x *= width / height;
+    vec2 xy = uv.xy * 2. - 1.;
+    xy *= vec2(width / height, -1.);
 
-    vec2 origin = vec2(uv.x, uv.y) * scale;
+    vec2 origin = xy * scale;
     vec2 target = getTarget(origin);
 
     float t = sin(time + PI) * .5 + .5;

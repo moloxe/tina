@@ -67,10 +67,10 @@ function setup() {
 
     ---
 
-    uv = uv * 2. - 1.;
-    uv.x *= width/height;
+    vec2 dir2d = uv * 2. - 1.;
+    dir2d *= vec2(width / height, -1);
     vec3 ro = vec3(0.);
-    vec3 rd = vec3(uv, -1.);
+    vec3 rd = vec3(dir2d, -1.);
     ro *= rotateY(playerAngle);
     ro.xz += playerP;
     ro.y += .8;

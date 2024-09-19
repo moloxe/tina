@@ -38,11 +38,11 @@ function setup() {
 
     ---
 
-    uv = uv * 2. - 1.;
-    uv.x *= width / height;
+    vec2 dir2d = uv * 2. - 1.;
+    dir2d *= vec2(width / height, -1);
 
     vec3 ro = vec3(0., 0., 1.);
-    vec3 rd = normalize(vec3(uv, -.8));
+    vec3 rd = normalize(vec3(dir2d, -.8));
 
     vec4 c = vec4(0., 0., 0., 1.);
 

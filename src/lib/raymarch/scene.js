@@ -8,8 +8,8 @@ uniform ScemeCam sceneCam;
 
 ---
 
-uv = uv * 2. - 1.;
-uv.x *= width/height;
+vec2 dir2d = uv * 2. - 1.;
+dir2d *= vec2(width / height, -1);
 
 vec3 pos = sceneCam.pos;
 vec3 spherical = sceneCam.spherical;
@@ -23,7 +23,7 @@ ro *= rotateX(spherical.z);
 ro *= rotateY(spherical.y);
 ro += pos;
 
-vec3 rd = normalize(vec3(uv, -focalLength));
+vec3 rd = normalize(vec3(dir2d, -focalLength));
 rd *= rotateX(spherical.z);
 rd *= rotateY(spherical.y);
 

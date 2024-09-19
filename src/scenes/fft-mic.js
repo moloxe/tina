@@ -29,26 +29,25 @@ function setup() {
 
     ---
 
-    float i = uv.x * width;
-    float j = height - uv.y * height;
-    i = i + 1.0;
+    vec2 coord = uv * vec2(width, height);
+    coord.x += 1.;
 
     vec4 prev = texture(
       graphics,
-      vec2(i / width, j / height)
+      coord / vec2(width, height)
     );
 
-    bool isCurrent = i > width - 1.0;
+    bool isCurrent = coord.x > width - 1.;
 
     if(isCurrent) {
-      float freq = uv.y;
-      float spec = spectrum[int(freq * ${bands}.0)];
-      float amp = pow(sin(spec * PI/2.), 2.);
+      float freq = 1. - uv.y;
+      float spec = spectrum[int(freq * ${bands}.)];
+      float amp = pow(sin(spec * PI / 2.), 2.);
       fragColor = vec4(
-        hsv2rgb(freq, 1. - amp, amp), 1.0
+        hsv2rgb(freq, 1. - amp, amp), 1.
       );
     } else {
-      fragColor = vec4(prev.rgb, 1.0);
+      fragColor = vec4(prev.rgb, 1.);
     }
   `)
 }

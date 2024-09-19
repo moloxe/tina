@@ -16,7 +16,6 @@ function setup() {
     ---
 
     vec2 res = vec2(width, height);
-    uv.y = 1. - uv.y;
 
     float n = 0.;
     for(float i = -1.; i <= 1.; i++)
