@@ -1,15 +1,8 @@
 function Player() {
-  const initialPos = [0, 1, 1]
+  this.initialPos = [0, 1, 1]
   this.vel = [0, 0, 0]
   this.cam = [0.6, 0, -0.5] // spherical coordinates
   this.onTheFloor = true
-  this.body = new CapsulePhysics({
-    pos: [...initialPos],
-    end: [0, -0.2, 0],
-    radius: 0.05,
-    collisionGroup: 1,
-  })
-  this.materials = []
 
   this.maxVel = 0.02
   this.acc = 0.003
@@ -84,10 +77,9 @@ function Player() {
     this.vel[1] -= 0.002 // gravity
     this.vel[2] *= 0.9
 
-    if (this.body.pos[1] < -5) this.body.pos = [...initialPos] // fall
+    if (this.body.pos[1] < -5) this.body.pos = [...this.initialPos] // fall
 
-    this.materials[0].pos = this.body.pos
-    this.materials[1].pos = this.body.pos
+    tina.materials[this.groupIndex].pos = this.body.pos
 
     return collisions
   }
@@ -95,7 +87,6 @@ function Player() {
 
 let player,
   tina,
-  fps,
   lights = []
 
 function setup() {
@@ -104,24 +95,47 @@ function setup() {
   tina = new Tina(...getResolution(), TINA_SCENE)
   player = new Player()
 
-  player.materials[0] = tina.sphere({
-    shininess: 512,
-    radius: 0.08,
-    collisionGroup: player.body.collisionGroup,
+  player.groupIndex = tina.parent({})
+
+  player.body = new CapsulePhysics({
+    collisionGroup: player.groupIndex,
+    pos: [...player.initialPos],
+    end: [0, -0.2, 0],
+    radius: 0.05,
   })
 
-  player.materials[1] = tina.capsule({
+  tina.sphere({
+    parentIndex: player.groupIndex,
+    collisionGroup: player.body.collisionGroup,
+    shininess: 512,
+    radius: 0.08,
+    smoothFactor: 0.05,
+  })
+
+  tina.capsule({
+    parentIndex: player.groupIndex,
+    collisionGroup: player.body.collisionGroup,
     shininess: 512,
     color: [1, 0, 1],
     radius: player.body.radius,
     end: player.body.end,
-    collisionGroup: player.body.collisionGroup,
   })
 
   tina.sphere({
     shininess: 512,
     color: [1, 1, 1],
     pos: [0, 0.2, 0],
+    smoothFactor: 0.2,
+  })
+
+  tina.box({
+    pos: [0, 0.05, 0],
+    dimensions: [0.3, 0.05, 0.3],
+  })
+
+  tina.box({
+    pos: [0, -0.1, 0],
+    dimensions: [3, 0, 3],
   })
 
   tina.box({
@@ -137,16 +151,6 @@ function setup() {
   })
 
   tina.box({
-    pos: [0, 0.05, 0],
-    dimensions: [0.3, 0.05, 0.3],
-  })
-
-  tina.box({
-    pos: [0, -0.1, 0],
-    dimensions: [3, 0, 3],
-  })
-
-  tina.box({
     pos: [-2, 0.4, 0],
     dimensions: [0.004, 0.5, 0.5],
   })
@@ -159,17 +163,14 @@ function setup() {
 
   lights[0] = tina.pointLight({
     color: [1, 0, 0],
-    power: 3,
   })
 
   lights[1] = tina.pointLight({
     color: [0, 1, 0],
-    power: 3,
   })
 
   lights[2] = tina.pointLight({
     color: [0, 0, 1],
-    power: 3,
   })
 
   player.body.build(tina)
@@ -177,10 +178,6 @@ function setup() {
 
   controlsListener()
   noSmooth()
-
-  setInterval(() => {
-    fps = frameRate().toFixed(0)
-  }, 300)
 }
 
 function draw() {
@@ -199,15 +196,15 @@ function draw() {
   const collisions = player.updatePhysics()
 
   image(graphics, 0, 0, width, height)
-  image(collisions, 0, height / 2, width / 6, width / 6)
+  image(collisions, 0, 0, width / 6, height / 6)
 
   fill('#00ff00')
+  stroke('#000')
+  textSize(14)
+  text(`Collisions`, 10, 20)
+
   noStroke()
   ellipse(width / 2, height / 2, 4, 4)
-  textSize(12)
-  stroke('#000')
-  text(`FPS: ${fps}`, 10, 30)
-  text(`Collisions`, 10, height / 2 + 20)
 }
 
 function controlsListener() {
