@@ -10,8 +10,7 @@ struct SdScene {
   int materialIndex;
 };
 
-float sdMaterial(vec3 p, int index) {
-  Material m = materials[index];
+float sdMaterial(vec3 p, Material m) {
   vec3 pos = (p - m.pos) * rotate(m.rotation);
   if(m.parentIndex != -1) {
     Material parent = materials[m.parentIndex];
@@ -30,28 +29,32 @@ float sdMaterial(vec3 p, int index) {
 
 SdScene sdScene(vec3 p, int excludeGroup) {
   SdScene sd = SdScene(1e10, -1);
+  float smoothFactor = 0.;
+  float totalDistance = 0.;
 
   for (int i = 0; i < materials.length(); i++) {
+    Material m = materials[i];
 
     if(
-      (excludeGroup != -1 && materials[i].collisionGroup == excludeGroup) ||
-      (materials[i].shape == 0)
+      (excludeGroup != -1 && m.collisionGroup == excludeGroup) ||
+      (m.shape == 0)
     ) continue;
 
-    float d1 = sdMaterial(p, i);
+    float distance = sdMaterial(p, m);
 
-    if (d1 < sd.distance) {
-      sd.distance = d1;
+    if (distance < sd.distance) {
       sd.materialIndex = i;
     }
-
-    while(materials[i].smoothFactor > 0. && i + 1 < materials.length()) { // This is too dangerous 💀
-      float d2 = sdMaterial(p, i + 1);
-      if (d2 < sd.distance) sd.materialIndex = i + 1;
-      d1 = opSmoothUnion(d1, d2, materials[i].smoothFactor);
-      if (d1 < sd.distance) sd.distance = d1;
-      i++;
+    if(smoothFactor > 0.) {
+      totalDistance = opSmoothUnion(totalDistance, distance, smoothFactor);
+    } else {
+      totalDistance = distance;
     }
+    if (totalDistance < sd.distance) {
+      sd.distance = totalDistance;
+    }
+
+    smoothFactor = m.smoothFactor;
   }
   return sd;
 }
