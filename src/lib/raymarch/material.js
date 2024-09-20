@@ -13,7 +13,7 @@ struct Material {
   vec3 rotation;
   vec3 color;
   float shininess;
-  int shape; // 1: sphere, 2: box
+  int shape;
   float radius;
   vec3 dimensions;
   vec3 start;

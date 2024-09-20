@@ -1,5 +1,3 @@
-// heavily p5js based shader helper
-
 const TINA_SCENE = 'TINA_SCENE'
 
 const vertShader = `#version 300 es
