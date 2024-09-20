@@ -1,11 +1,4 @@
 ---
-import TINA from '@src/lib/tina?raw'
-import TINA_COMMON from '@src/lib/tina.common?raw'
-import TINA_RAYMARCH_LIGHT from '@src/lib/raymarch/light?raw'
-import TINA_RAYMARCH_MATERIAL from '@src/lib/raymarch/material?raw'
-import TINA_RAYMARCH_SCENE from '@src/lib/raymarch/scene?raw'
-import TINA_RAYMARCH from '@src/lib/raymarch/raymarch?raw'
-import TINA_RAYMARCH_PHYSICS from '@src/lib/raymarch/physics.capsule?raw'
 import '@src/assets/styles/main.css'
 
 interface Props {
@@ -15,16 +8,6 @@ interface Props {
 
 const title = Astro.props.title || 'Tina'
 const SKETCH = Astro.props.sketch
-const SCRIPT = [
-  TINA_COMMON,
-  TINA_RAYMARCH_PHYSICS,
-  TINA_RAYMARCH,
-  TINA_RAYMARCH_MATERIAL,
-  TINA_RAYMARCH_SCENE,
-  TINA_RAYMARCH_LIGHT,
-  TINA,
-  SKETCH,
-  ].join('\n')
 ---
 
 <!doctype html>
@@ -40,6 +23,7 @@ const SCRIPT = [
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"
     ></script>
+    <script src="/tina/lib.js" is:inline></script>
   </head>
   <body>
     <img
@@ -50,7 +34,7 @@ const SCRIPT = [
       referrerpolicy="unsafe-url"
       id="libre-counter"
     />
-    <script is:inline set:html={SCRIPT} />
+    <script is:inline set:html={SKETCH} />
   </body>
 </html>
 
