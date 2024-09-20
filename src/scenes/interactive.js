@@ -4,7 +4,6 @@ function Player() {
   this.cam = [0.6, 0, -0.5] // spherical coordinates
   this.onTheFloor = true
 
-  this.maxVel = 0.02
   this.acc = 0.003
 
   this.move = (move) => {
@@ -38,41 +37,44 @@ function Player() {
     }
   }
 
-  // TODO: delta time has to be considered
   this.updatePhysics = () => {
     const prevPos = [...this.body.pos]
+
+    // Move body before checking collisions
     this.body.pos[0] += this.vel[0]
     this.body.pos[1] += this.vel[1]
     this.body.pos[2] += this.vel[2]
+
     const collisions = this.body.getCollisionMap()
-    let collideX = false
-    let collideY = false
-    let collideZ = false
     collisions.loadPixels()
+
+    const normal = [0, 0, 0]
     for (let i = 0; i < collisions.pixels.length; i += 4) {
       const normalX = (collisions.pixels[i] / 255) * 2 - 1
       const normalY = (collisions.pixels[i + 1] / 255) * 2 - 1
       const normalZ = (collisions.pixels[i + 2] / 255) * 2 - 1
       const module = sqrt(normalX ** 2 + normalY ** 2 + normalZ ** 2)
       if (module < 0.1) continue
-      // TODO: add direction to the collisions
-      if (abs(normalX) > 0.1) collideX = true
-      if (abs(normalY) > 0.1) collideY = true
-      if (abs(normalZ) > 0.1) collideZ = true
+      if (abs(normalX) > abs(normal[0])) normal[0] = normalX
+      if (abs(normalY) > abs(normal[1])) normal[1] = normalY
+      if (abs(normalZ) > abs(normal[2])) normal[2] = normalZ
     }
-    if (collideX) {
-      this.body.pos[0] = prevPos[0]
-      this.vel[0] = 0
+
+    if (abs(normal[0]) > 0.1) {
+      this.vel[0] *= -abs(normal[0]) * 0.1
+      this.body.pos[0] = prevPos[0] + this.vel[0]
     }
-    if (collideY) {
-      this.body.pos[1] = prevPos[1]
-      this.vel[1] = -this.vel[1] * 0.2 // bounce
-      this.onTheFloor = true
+    if (abs(normal[1]) > 0.1) {
+      this.onTheFloor = normal[1] > 0
+      // TODO: Fix bouncing
+      this.vel[1] *= -abs(normal[1]) * 0.1
+      this.body.pos[1] = prevPos[1] + this.vel[1]
     }
-    if (collideZ) {
-      this.body.pos[2] = prevPos[2]
-      this.vel[2] = 0
+    if (abs(normal[2]) > 0.1) {
+      this.vel[2] *= -abs(normal[2]) * 0.1
+      this.body.pos[2] = prevPos[2] + this.vel[2]
     }
+
     this.vel[0] *= 0.9
     this.vel[1] -= 0.002 // gravity
     this.vel[2] *= 0.9
@@ -87,7 +89,8 @@ function Player() {
 
 let player,
   tina,
-  lights = []
+  lights = [],
+  table
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
@@ -124,12 +127,13 @@ function setup() {
   tina.sphere({
     shininess: 512,
     color: [1, 1, 1],
-    pos: [0, 0.2, 0],
+    pos: [0, 0.3, 0],
     smoothFactor: 0.2,
   })
 
-  tina.box({
-    pos: [0, 0.05, 0],
+  table = tina.box({
+    shininess: 512,
+    color: [1, 0, 1],
     dimensions: [0.3, 0.05, 0.3],
   })
 
@@ -181,6 +185,10 @@ function setup() {
 }
 
 function draw() {
+  const t = millis() / 1000
+  table.pos = [0, 0.1 + sin(t) / 10, 0]
+  table.rotation = [0, t / 2, 0]
+
   for (let i = 0; i < lights.length; i++) {
     lights[i].pos = [
       cos(frameCount / 200 + (i * TWO_PI) / lights.length) * 3,
@@ -196,12 +204,12 @@ function draw() {
   const collisions = player.updatePhysics()
 
   image(graphics, 0, 0, width, height)
-  image(collisions, 0, 0, width / 6, height / 6)
+  image(collisions, 0, 0, height / 4, height / 4)
 
   fill('#00ff00')
   stroke('#000')
-  textSize(14)
-  text(`Collisions`, 10, 20)
+  textSize(12)
+  text('Collisions', 10, 20)
 
   noStroke()
   ellipse(width / 2, height / 2, 4, 4)
