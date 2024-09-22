@@ -1,5 +1,3 @@
-const TINA_SCENE = 'TINA_SCENE'
-
 const vertShader = `#version 300 es
 in vec3 aPosition;
 out vec2 uv;
@@ -10,14 +8,22 @@ void main() {
 }`
 
 function FragBuilder(tina) {
-  this.mainContent = `fragColor = vec4(1.);`
+  this.mainContent = ``
   this.head = ``
   this.getFrag = () => {
-    const nMaterials = tina?.materials?.length
-    const nLights = tina?.pointLights?.length
-    const MATERIALS_SHADER = nMaterials > 0 ? buildMaterials(nMaterials) : ''
-    const RAYMARCH_SHADER = MATERIALS_SHADER === '' ? '' : TINA_RAYMARCH
-    const LIGHTS_SHADER = nLights > 0 ? buildLights(nLights) : ''
+    const nMaterials = tina.materials.length
+    const nLights = tina.pointLights.length
+    let calcScene = ``
+    const shaders = []
+    if (nMaterials > 0) {
+      shaders.push(buildMaterials(nMaterials))
+      shaders.push(TINA_RAYMARCH)
+      if (nLights > 0) {
+        shaders.push(buildLights(nLights))
+        shaders.push(TINA_RAYMARCH_SCENE)
+        calcScene = `fragColor = vec4(calcScene(), 1.);`
+      }
+    }
     return `#version 300 es
     precision mediump float;
 
@@ -29,13 +35,12 @@ function FragBuilder(tina) {
     uniform float height;
     out vec4 fragColor;
 
-    ${MATERIALS_SHADER}
-    ${RAYMARCH_SHADER}
-    ${LIGHTS_SHADER}
+    ${shaders.join('\n')}
 
     ${this.head}
 
     void main() {
+      ${calcScene}
       ${this.mainContent}
     }
   `
@@ -46,18 +51,14 @@ function Tina(width, height, TINA_MODE) {
   this.width = width
   this.height = height
   this.mode = TINA_MODE
-
-  if (this.mode === TINA_SCENE) {
-    const scene = new Scene()
-    Object.assign(this, scene)
-  }
+  this.materials = []
+  this.pointLights = []
+  this.pos = [0, 0, 0]
+  this.spherical = [0, 0, 0]
+  this.fov = 90
 
   const graphics = createGraphics(this.width, this.height, WEBGL)
   graphics.pixelDensity(1)
-
-  this.buildScene = () => {
-    this.build(TINA_RAYMARCH_SCENE)
-  }
 
   this.resize = (width, height) => {
     this.width = width
@@ -67,35 +68,23 @@ function Tina(width, height, TINA_MODE) {
 
   this.shader
   this.build = (content = '') => {
-    const fragBuilder = new FragBuilder(this)
-
     if (!content.includes('---')) content = `---${content}`
-
     const [head, mainContent] = content.split('---')
 
-    if (head) fragBuilder.head = head
-    if (mainContent) fragBuilder.mainContent = mainContent
-
+    const fragBuilder = new FragBuilder(this)
+    fragBuilder.head = head
+    fragBuilder.mainContent = mainContent
     const fragShader = fragBuilder.getFrag()
+
     this.shader = createShader(vertShader, fragShader)
 
     graphics.shader(this.shader)
     graphics.background(0)
   }
-
-  this.time = 0
   this.update = (uniforms = {}) => {
-    this.time = performance.now() / 1000
-
     if (!shader) throw new Error('Missed build: call Tina.build()')
 
-    if (this.mode === TINA_SCENE) {
-      uniforms = { ...uniforms, ...this.getUniforms() }
-    }
-
-    uniforms['time'] = this.time
-    uniforms['width'] = this.width
-    uniforms['height'] = this.height
+    uniforms = { ...uniforms, ...this.getUniforms() }
 
     Object.entries(uniforms).forEach(([uniform, value]) =>
       this.shader.setUniform(uniform, value)
@@ -103,5 +92,70 @@ function Tina(width, height, TINA_MODE) {
 
     graphics.rect(0, 0, 0, 0)
     return graphics
+  }
+  this.getUniforms = function () {
+    const uniforms = {}
+
+    uniforms['time'] = performance.now() / 1000
+    uniforms['width'] = this.width
+    uniforms['height'] = this.height
+
+    this.materials.forEach((material, index) => {
+      Object.assign(uniforms, material.getUniforms(index))
+    })
+    this.pointLights.forEach((pointLight, index) => {
+      Object.assign(uniforms, pointLight.getUniforms(index))
+    })
+
+    uniforms['sceneCam.pos'] = this.pos
+    uniforms['sceneCam.spherical'] = this.spherical
+    uniforms['sceneCam.fov'] = this.fov
+
+    return uniforms
+  }
+  this.pointLight = function (props) {
+    const index = this.pointLights.length
+    this.pointLights.push(new PointLight(props))
+    return this.pointLights[index]
+  }
+  this.parent = function (props) {
+    const index = this.materials.length
+    this.materials.push(
+      new Material({
+        ...props,
+        shape: 'parent', // Not really a shape, but it's a way to group materials
+      })
+    )
+    return index
+  }
+  this.box = function (props) {
+    const index = this.materials.length
+    this.materials.push(
+      new Material({
+        ...props,
+        shape: 'box',
+      })
+    )
+    return this.materials[index]
+  }
+  this.sphere = function (props) {
+    const index = this.materials.length
+    this.materials.push(
+      new Material({
+        ...props,
+        shape: 'sphere',
+      })
+    )
+    return this.materials[index]
+  }
+  this.capsule = function (props) {
+    const index = this.materials.length
+    this.materials.push(
+      new Material({
+        ...props,
+        shape: 'capsule',
+      })
+    )
+    return this.materials[index]
   }
 }

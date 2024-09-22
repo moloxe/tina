@@ -4,7 +4,7 @@ const spherical = [2, 0, 0]
 function setup() {
   createCanvas(windowWidth, windowHeight)
 
-  tina = new Tina(width / 2, height / 2, TINA_SCENE)
+  tina = new Tina(width / 2, height / 2)
 
   tina.pointLight({
     pos: [0, 0, 2],
@@ -88,7 +88,7 @@ function setup() {
     dimensions: [1, 1, 0.01],
   })
 
-  tina.buildScene()
+  tina.build()
   tina.fov = 60
   noSmooth()
 }

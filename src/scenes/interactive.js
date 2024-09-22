@@ -95,7 +95,7 @@ let player,
 function setup() {
   createCanvas(windowWidth, windowHeight)
 
-  tina = new Tina(...getResolution(), TINA_SCENE)
+  tina = new Tina(...getResolution())
   player = new Player()
 
   player.groupIndex = tina.parent({})
@@ -178,7 +178,7 @@ function setup() {
   })
 
   player.body.build(tina)
-  tina.buildScene()
+  tina.build()
 
   controlsListener()
   noSmooth()

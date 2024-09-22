@@ -58,12 +58,8 @@ function CapsulePhysics({
   this.end = end
   this.radius = radius
   this.collisionGroup = collisionGroup // A collision group has to be set to ignore specific materials
-  this.physics = new Tina(360, 360, TINA_SCENE)
+  this.physics = new Tina(360, 360)
   this.build = (tina) => {
-    if (tina?.mode !== TINA_SCENE)
-      throw new Error(
-        'CapsulePhysics requires a Tina instance with TINA_SCENE mode'
-      )
     this.physics.materials = tina.materials
     this.physics.build(TINA_RAYMARCH_PHYSICS_CAPSULE)
   }
