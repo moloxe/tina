@@ -5,8 +5,10 @@ import TINA_RAYMARCH_MATERIAL from '@src/lib/raymarch/material?raw'
 import TINA_RAYMARCH_SCENE from '@src/lib/raymarch/scene?raw'
 import TINA_RAYMARCH from '@src/lib/raymarch/raymarch?raw'
 import TINA_RAYMARCH_PHYSICS from '@src/lib/raymarch/physics.capsule?raw'
+import TINA_KEYBOARD from '@src/lib/utils/keyboard?raw'
 
 const SCRIPT = [
+  TINA_KEYBOARD,
   TINA_COMMON,
   TINA_RAYMARCH_PHYSICS,
   TINA_RAYMARCH,

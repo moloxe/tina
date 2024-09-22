@@ -180,7 +180,16 @@ function setup() {
   player.body.build(tina)
   tina.build()
 
-  controlsListener()
+  keyboardListener({
+    Space: () => player.move('UP'),
+    MetaLeft: () => player.move('DOWN'),
+    ControlLeft: () => player.move('DOWN'),
+    KeyW: () => player.move('FRONT'),
+    KeyS: () => player.move('BACK'),
+    KeyA: () => player.move('LEFT'),
+    KeyD: () => player.move('RIGHT'),
+  })
+
   noSmooth()
 }
 
@@ -213,26 +222,6 @@ function draw() {
 
   noStroke()
   ellipse(width / 2, height / 2, 4, 4)
-}
-
-function controlsListener() {
-  let keyCodes = {}
-  window.addEventListener('keyup', (event) => {
-    event.preventDefault()
-    keyCodes[event.code] = false
-  })
-  window.addEventListener('keydown', (event) => {
-    event.preventDefault()
-    keyCodes[event.code] = true
-  })
-  setInterval(() => {
-    if (keyCodes['Space']) player.move('UP')
-    if (keyCodes['MetaLeft'] || keyCodes['ControlLeft']) player.move('DOWN')
-    if (keyCodes['KeyW']) player.move('FRONT')
-    if (keyCodes['KeyS']) player.move('BACK')
-    if (keyCodes['KeyA']) player.move('LEFT')
-    if (keyCodes['KeyD']) player.move('RIGHT')
-  }, 1000 / 60)
 }
 
 function mouseMoved() {
