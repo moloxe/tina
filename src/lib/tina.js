@@ -82,7 +82,7 @@ function Tina(width, height, TINA_MODE) {
     graphics.background(0)
   }
   this.update = (uniforms = {}) => {
-    if (!shader) throw new Error('Missed build: call Tina.build()')
+    if (!this.shader) throw new Error('Missed build: call Tina.build()')
 
     uniforms = { ...uniforms, ...this.getUniforms() }
 
