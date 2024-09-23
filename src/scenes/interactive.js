@@ -55,31 +55,27 @@ function Player() {
       const normalZ = (collisions.pixels[i + 2] / 255) * 2 - 1
       const module = sqrt(normalX ** 2 + normalY ** 2 + normalZ ** 2)
       if (module < 0.1) continue
-      if (abs(normalX) > abs(normal[0])) normal[0] = normalX
-      if (abs(normalY) > abs(normal[1])) normal[1] = normalY
-      if (abs(normalZ) > abs(normal[2])) normal[2] = normalZ
+      normal[0] = abs(normalX) > abs(normal[0]) ? normalX : normal[0]
+      normal[1] = abs(normalY) > abs(normal[1]) ? normalY : normal[1]
+      normal[2] = abs(normalZ) > abs(normal[2]) ? normalZ : normal[2]
     }
 
-    if (abs(normal[0]) > 0.1) {
-      this.vel[0] *= -abs(normal[0]) * 0.1
-      this.body.pos[0] = prevPos[0] + this.vel[0]
-    }
-    if (abs(normal[1]) > 0.1) {
-      this.onTheFloor = normal[1] > 0
-      // TODO: Fix bouncing
-      this.vel[1] *= -abs(normal[1]) * 0.1
-      this.body.pos[1] = prevPos[1] + this.vel[1]
-    }
-    if (abs(normal[2]) > 0.1) {
-      this.vel[2] *= -abs(normal[2]) * 0.1
-      this.body.pos[2] = prevPos[2] + this.vel[2]
+    const bounce = 0.01
+    for (let i = 0; i < 3; i++) {
+      if (abs(normal[i]) > 0.01) {
+        const sign = this.vel[i] > 0 ? 1 : -1
+        this.vel[i] = -sign * abs(this.vel[i]) * bounce
+        if (abs(this.vel[i]) < 0.01) this.vel[i] = 0
+        this.body.pos[i] = prevPos[i] + this.vel[i]
+      }
     }
 
+    this.onTheFloor = normal[1] > 0.01
     this.vel[0] *= 0.9
     this.vel[1] -= 0.002 // gravity
     this.vel[2] *= 0.9
 
-    if (this.body.pos[1] < -5) this.body.pos = [...this.initialPos] // fall
+    if (this.body.pos[1] < -5) this.body.pos = [...this.initialPos] // dead
 
     tina.materials[this.groupIndex].pos = this.body.pos
 
