@@ -1,3 +1,4 @@
+import { minify } from 'terser'
 import TINA from '@src/lib/tina?raw'
 import TINA_COMMON from '@src/lib/tina.common?raw'
 import TINA_RAYMARCH_LIGHT from '@src/lib/raymarch/light?raw'
@@ -19,5 +20,8 @@ const SCRIPT = [
 ].join('\n')
 
 export const GET = async () => {
-  return new Response(SCRIPT)
+  const minified = await minify(SCRIPT)
+  return new Response(minified.code, {
+    headers: { 'Content-Type': 'application/javascript' },
+  })
 }
