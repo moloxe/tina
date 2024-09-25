@@ -235,7 +235,7 @@ function mouseWheel(event) {
 }
 
 function getResolution() {
-  return [256 * (width / height), 256]
+  return [240 * (width / height), 240]
 }
 
 let resizeTimeout

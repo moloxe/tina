@@ -12,7 +12,7 @@ type Props = {
 }
 
 const TinaExamples: FC<Props> = ({ examples }) => {
-  const [currentExample, setCurrentExample] = useState(3)
+  const [currentExample, setCurrentExample] = useState(6)
   const example = examples[currentExample]
 
   const sketch = useMemo(() => {
