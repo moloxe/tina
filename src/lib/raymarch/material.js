@@ -39,6 +39,7 @@ function Material({
   collisionGroup = -1,
   smoothFactor = 0,
   parentIndex = -1,
+  sdFunc = '',
 }) {
   this.pos = pos
   this.rotation = rotation
@@ -52,6 +53,17 @@ function Material({
   this.collisionGroup = collisionGroup
   this.smoothFactor = smoothFactor
   this.parentIndex = parentIndex
+  this.sdFunc = sdFunc
+
+  this.customShapeId = (() => {
+    if (this.sdFunc) {
+      this.shape = this.sdFunc
+      MATERIAL_ID[this.sdFunc] = floor(100 + random(1000))
+      return MATERIAL_ID[this.sdFunc]
+    }
+    return null
+  })()
+
   this.getUniforms = (index) => ({
     [`materials[${index}].pos`]: this.pos,
     [`materials[${index}].rotation`]: this.rotation,
@@ -63,7 +75,7 @@ function Material({
     [`materials[${index}].start`]: this.start,
     [`materials[${index}].end`]: this.end,
     [`materials[${index}].collisionGroup`]: this.collisionGroup,
-    [`materials[${index}].smoothFactor`]: smoothFactor,
-    [`materials[${index}].parentIndex`]: parentIndex,
+    [`materials[${index}].smoothFactor`]: this.smoothFactor,
+    [`materials[${index}].parentIndex`]: this.parentIndex,
   })
 }

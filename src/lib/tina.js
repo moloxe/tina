@@ -17,7 +17,7 @@ function FragBuilder(tina) {
     const shaders = []
     if (nMaterials > 0) {
       shaders.push(buildMaterials(nMaterials))
-      shaders.push(TINA_RAYMARCH)
+      shaders.push(buildRaymarch(tina.materials))
       if (nLights > 0) {
         shaders.push(buildLights(nLights))
         shaders.push(TINA_RAYMARCH_SCENE)
@@ -127,6 +127,11 @@ function Tina(width, height, TINA_MODE) {
       })
     )
     return index
+  }
+  this.shape = function (props) {
+    const index = this.materials.length
+    this.materials.push(new Material(props))
+    return this.materials[index]
   }
   this.box = function (props) {
     const index = this.materials.length

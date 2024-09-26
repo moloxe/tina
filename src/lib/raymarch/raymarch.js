@@ -1,4 +1,4 @@
-const TINA_RAYMARCH = /* glsl */ `
+const buildRaymarch = (materials) => /* glsl */ `
 
 struct RayMarch {
   vec3 pos;
@@ -24,6 +24,14 @@ float sdMaterial(vec3 p, Material m) {
   } else if(m.shape == 15) {
     d = sdCapsule(pos, m.start, m.end, m.radius);
   }
+  ${materials.map(({ sdFunc, customShapeId }) => {
+    if (sdFunc) {
+      return /* glsl */ `else if(m.shape == ${customShapeId}) {
+          d = ${sdFunc};
+        }`
+    }
+    return ''
+  })}
   return d;
 }
 
