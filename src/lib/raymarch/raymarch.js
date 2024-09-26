@@ -24,14 +24,16 @@ float sdMaterial(vec3 p, Material m) {
   } else if(m.shape == 15) {
     d = sdCapsule(pos, m.start, m.end, m.radius);
   }
-  ${materials.map(({ sdFunc, customShapeId }) => {
-    if (sdFunc) {
-      return /* glsl */ `else if(m.shape == ${customShapeId}) {
+  ${materials
+    .map(({ sdFunc, customShapeId }) => {
+      if (sdFunc) {
+        return /* glsl */ `else if(m.shape == ${customShapeId}) {
           d = ${sdFunc};
         }`
-    }
-    return ''
-  })}
+      }
+      return ''
+    })
+    .join('\n')}
   return d;
 }
 
@@ -43,10 +45,10 @@ SdScene sdScene(vec3 p, int excludeGroup) {
   for (int i = 0; i < materials.length(); i++) {
     Material m = materials[i];
 
-    if(
-      (excludeGroup != -1 && m.collisionGroup == excludeGroup) ||
-      (m.shape == 0)
-    ) continue;
+    // if( // Man this too heavy, make one only for collisions
+    //   (excludeGroup != -1 && m.collisionGroup == excludeGroup) ||
+    //   (m.shape == 0)
+    // ) continue;
 
     float distance = sdMaterial(p, m);
 
