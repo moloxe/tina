@@ -58,7 +58,7 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
   vec3 viewDir = -rd;
   Material material = materials[rm.materialIndex];
 
-  vec3 normal = calcSceneNormal(pos, -1);
+  vec3 normal = calcSceneNormal(pos);
   vec3 diffuseColor = material.color;
   float shininess = material.shininess;
 

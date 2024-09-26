@@ -37,34 +37,44 @@ float sdMaterial(vec3 p, Material m) {
   return d;
 }
 
-SdScene sdScene(vec3 p, int excludeGroup) {
-  SdScene sd = SdScene(1e10, -1);
-  float smoothFactor = 0.;
-  float totalDistance = 0.;
+void procDist(
+  inout SdScene sd, int i, float distance, inout float accDist, inout float smoothFactor
+) {
+  if (distance < sd.distance) {
+    sd.materialIndex = i;
+  }
+  if(smoothFactor > 0.) {
+    accDist = opSmoothUnion(accDist, distance, smoothFactor);
+  } else {
+    accDist = distance;
+  }
+  if (accDist < sd.distance) {
+    sd.distance = accDist;
+  }
+  smoothFactor = materials[i].smoothFactor;
+}
 
+SdScene sdScene(vec3 p) {
+  SdScene sd = SdScene(1e10, -1);
+  float accDist = 0.;
+  float smoothFactor = 0.;
   for (int i = 0; i < materials.length(); i++) {
     Material m = materials[i];
+    if(m.shape == 0) continue;
+    procDist(sd, i, sdMaterial(p, m), accDist, smoothFactor);
+  }
+  return sd;
+}
 
-    // if( // Man this too heavy, make one only for collisions
-    //   (excludeGroup != -1 && m.collisionGroup == excludeGroup) ||
-    //   (m.shape == 0)
-    // ) continue;
-
-    float distance = sdMaterial(p, m);
-
-    if (distance < sd.distance) {
-      sd.materialIndex = i;
-    }
-    if(smoothFactor > 0.) {
-      totalDistance = opSmoothUnion(totalDistance, distance, smoothFactor);
-    } else {
-      totalDistance = distance;
-    }
-    if (totalDistance < sd.distance) {
-      sd.distance = totalDistance;
-    }
-
-    smoothFactor = m.smoothFactor;
+SdScene sdScene(vec3 p, int excludeGroup) {
+  SdScene sd = SdScene(1e10, -1);
+  float accDist = 0.;
+  float smoothFactor = 0.;
+  for (int i = 0; i < materials.length(); i++) {
+    Material m = materials[i];
+    if(m.shape == 0) continue;
+    if(excludeGroup != -1 && m.collisionGroup == excludeGroup) continue;
+    procDist(sd, i, sdMaterial(p, m), accDist, smoothFactor);
   }
   return sd;
 }
@@ -86,6 +96,16 @@ RayMarch rayMarch(vec3 ro, vec3 rd) {
     }
   }
   return rm;
+}
+
+vec3 calcSceneNormal(vec3 p) {
+  float eps = 1e-4;
+  vec3 h = vec3(eps, 0.0, 0.0);
+  return normalize(vec3(
+    sdScene(p + h.xyy).distance - sdScene(p - h.xyy).distance,
+    sdScene(p + h.yxy).distance - sdScene(p - h.yxy).distance,
+    sdScene(p + h.yyx).distance - sdScene(p - h.yyx).distance
+  ));
 }
 
 vec3 calcSceneNormal(vec3 p, int excludeGroup) {

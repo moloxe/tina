@@ -23,7 +23,7 @@ function setup() {
     RayMarch rm = rayMarch(ro, rd);
     if(rm.materialIndex == -1) return;
 
-    vec3 normal = calcSceneNormal(rm.pos, -1) / 2. + .5;
+    vec3 normal = calcSceneNormal(rm.pos) / 2. + .5;
     float dist = length(rm.pos - ro);
     float bri = pow(sin(dist * PI / 6.), 6.);
 
