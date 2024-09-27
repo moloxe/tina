@@ -93,7 +93,7 @@ function Tina(width, height, TINA_MODE) {
     graphics.rect(0, 0, 0, 0)
     return graphics
   }
-  this.getUniforms = function () {
+  this.getUniforms = () => {
     const uniforms = {}
 
     uniforms['time'] = performance.now() / 1000
@@ -113,12 +113,12 @@ function Tina(width, height, TINA_MODE) {
 
     return uniforms
   }
-  this.pointLight = function (props) {
+  this.pointLight = (props) => {
     const index = this.pointLights.length
     this.pointLights.push(new PointLight(props))
     return this.pointLights[index]
   }
-  this.parent = function (props) {
+  this.parent = (props) => {
     const index = this.materials.length
     this.materials.push(
       new Material({
@@ -128,12 +128,12 @@ function Tina(width, height, TINA_MODE) {
     )
     return index
   }
-  this.shape = function (props) {
+  this.shape = (props) => {
     const index = this.materials.length
     this.materials.push(new Material(props))
     return this.materials[index]
   }
-  this.box = function (props) {
+  this.box = (props) => {
     const index = this.materials.length
     this.materials.push(
       new Material({
@@ -143,7 +143,7 @@ function Tina(width, height, TINA_MODE) {
     )
     return this.materials[index]
   }
-  this.sphere = function (props) {
+  this.sphere = (props) => {
     const index = this.materials.length
     this.materials.push(
       new Material({
@@ -153,7 +153,7 @@ function Tina(width, height, TINA_MODE) {
     )
     return this.materials[index]
   }
-  this.capsule = function (props) {
+  this.capsule = (props) => {
     const index = this.materials.length
     this.materials.push(
       new Material({

@@ -1,13 +1,23 @@
+let player,
+  tina,
+  lights = [],
+  table
+
 function Player() {
   this.initialPos = [0, 1, 1]
   this.vel = [0, 0, 0]
-  this.cam = [0.6, 0, -0.5] // spherical coordinates
   this.onTheFloor = true
-
+  this.group = tina.parent({})
+  this.body = new CapsuleCollisions({
+    collisionGroup: this.group,
+    pos: [...this.initialPos],
+    end: [0, -0.2, 0],
+    radius: 0.05,
+  })
   this.acc = 0.003
 
   this.move = (move) => {
-    const yAngle = this.cam[1]
+    const yAngle = tina.spherical[1]
 
     if (move === 'UP' && this.onTheFloor) {
       this.vel[1] += 0.06
@@ -45,24 +55,11 @@ function Player() {
     this.body.pos[1] += this.vel[1]
     this.body.pos[2] += this.vel[2]
 
-    const collisions = this.body.getCollisionMap()
-    collisions.loadPixels()
-
-    const normal = [0, 0, 0]
-    for (let i = 0; i < collisions.pixels.length; i += 4) {
-      const normalX = (collisions.pixels[i] / 255) * 2 - 1
-      const normalY = (collisions.pixels[i + 1] / 255) * 2 - 1
-      const normalZ = (collisions.pixels[i + 2] / 255) * 2 - 1
-      const module = sqrt(normalX ** 2 + normalY ** 2 + normalZ ** 2)
-      if (module < 0.1) continue
-      normal[0] = abs(normalX) > abs(normal[0]) ? normalX : normal[0]
-      normal[1] = abs(normalY) > abs(normal[1]) ? normalY : normal[1]
-      normal[2] = abs(normalZ) > abs(normal[2]) ? normalZ : normal[2]
-    }
+    const dir = this.body.getCollisionDir()
 
     const bounce = 0.01
     for (let i = 0; i < 3; i++) {
-      if (abs(normal[i]) > 0.01) {
+      if (abs(dir[i]) > 0.01) {
         const sign = this.vel[i] > 0 ? 1 : -1
         this.vel[i] = -sign * abs(this.vel[i]) * bounce
         if (abs(this.vel[i]) < 0.01) this.vel[i] = 0
@@ -70,23 +67,19 @@ function Player() {
       }
     }
 
-    this.onTheFloor = normal[1] > 0.01
+    this.onTheFloor = dir[1] > 0.01
     this.vel[0] *= 0.9
     this.vel[1] -= 0.002 // gravity
     this.vel[2] *= 0.9
 
     if (this.body.pos[1] < -5) this.body.pos = [...this.initialPos] // dead
 
-    tina.materials[this.groupIndex].pos = this.body.pos
+    tina.materials[this.group].pos = this.body.pos
+    tina.pos = this.body.pos
 
-    return collisions
+    return player.body.map
   }
 }
-
-let player,
-  tina,
-  lights = [],
-  table
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
@@ -94,26 +87,19 @@ function setup() {
   tina = new Tina(...getResolution())
   player = new Player()
 
-  player.groupIndex = tina.parent({})
-
-  player.body = new CapsulePhysics({
-    collisionGroup: player.groupIndex,
-    pos: [...player.initialPos],
-    end: [0, -0.2, 0],
-    radius: 0.05,
-  })
+  tina.spherical = [0.6, 0, -0.5]
 
   tina.sphere({
-    parentIndex: player.groupIndex,
-    collisionGroup: player.body.collisionGroup,
+    parentIndex: player.group,
+    collisionGroup: player.group,
     shininess: 512,
     radius: 0.08,
     smoothFactor: 0.05,
   })
 
   tina.capsule({
-    parentIndex: player.groupIndex,
-    collisionGroup: player.body.collisionGroup,
+    parentIndex: player.group,
+    collisionGroup: player.group,
     shininess: 512,
     color: [1, 0, 1],
     radius: player.body.radius,
@@ -173,8 +159,8 @@ function setup() {
     color: [0, 0, 1],
   })
 
-  player.body.build(tina)
   tina.build()
+  player.body.build(tina)
 
   keyboardListener({
     Space: () => player.move('UP'),
@@ -202,9 +188,6 @@ function draw() {
     ]
   }
 
-  tina.pos = player.body.pos
-  tina.spherical = player.cam
-
   const graphics = tina.update()
   const collisions = player.updatePhysics()
 
@@ -222,8 +205,8 @@ function draw() {
 
 function mouseMoved() {
   if (!fullscreen()) return
-  player.cam[1] -= movedX / 300
-  player.cam[2] -= movedY / 300
+  tina.spherical[1] -= movedX / 300
+  tina.spherical[2] -= movedY / 300
 }
 
 function mouseWheel(event) {

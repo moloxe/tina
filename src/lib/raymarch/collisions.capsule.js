@@ -1,4 +1,4 @@
-const TINA_RAYMARCH_PHYSICS_CAPSULE = /* glsl */ `
+const TINA_RAYMARCH_COLLISIONS_CAPSULE = /* glsl */ `
 uniform Material capsule; // this material is not part of the scene
 
 RayMarch rayMarchCollision(vec3 ro, vec3 rd) {
@@ -46,30 +46,45 @@ if (rm.materialIndex != -1) {
 fragColor = vec4(color, 1.);
 `
 
-function CapsulePhysics({
+function CapsuleCollisions({
   pos = [0, 0, 0],
   start = [0, 0, 0],
   end = [0, 0, 0],
   radius = 0.1,
-  collisionGroup = -1,
+  collisionGroup = -1, // Excluded group
 }) {
   this.pos = pos
   this.start = start
   this.end = end
   this.radius = radius
   this.collisionGroup = collisionGroup // A collision group has to be set to ignore specific materials
-  this.physics = new Tina(360, 360)
+  this.collisions = new Tina(360, 360)
   this.build = (tina) => {
-    this.physics.materials = tina.materials
-    this.physics.build(TINA_RAYMARCH_PHYSICS_CAPSULE)
+    this.collisions.materials = tina.materials
+    this.collisions.build(TINA_RAYMARCH_COLLISIONS_CAPSULE)
   }
-  this.getCollisionMap = () => {
-    return this.physics.update({
+  this.getCollisionDir = () => {
+    this.map = this.collisions.update({
       ['capsule.pos']: this.pos,
       ['capsule.start']: this.start,
       ['capsule.end']: this.end,
       ['capsule.radius']: this.radius,
       ['capsule.collisionGroup']: this.collisionGroup,
     })
+    this.map.loadPixels()
+
+    const normal = [0, 0, 0]
+    for (let i = 0; i < this.map.pixels.length; i += 4) {
+      const normalX = (this.map.pixels[i] / 255) * 2 - 1
+      const normalY = (this.map.pixels[i + 1] / 255) * 2 - 1
+      const normalZ = (this.map.pixels[i + 2] / 255) * 2 - 1
+      const module = sqrt(normalX ** 2 + normalY ** 2 + normalZ ** 2)
+      if (module < 0.1) continue
+      normal[0] = abs(normalX) > abs(normal[0]) ? normalX : normal[0]
+      normal[1] = abs(normalY) > abs(normal[1]) ? normalY : normal[1]
+      normal[2] = abs(normalZ) > abs(normal[2]) ? normalZ : normal[2]
+    }
+
+    return normal
   }
 }

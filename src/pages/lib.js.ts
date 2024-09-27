@@ -5,13 +5,13 @@ import TINA_RAYMARCH_LIGHT from '@src/lib/raymarch/light?raw'
 import TINA_RAYMARCH_MATERIAL from '@src/lib/raymarch/material?raw'
 import TINA_RAYMARCH_SCENE from '@src/lib/raymarch/scene?raw'
 import TINA_RAYMARCH from '@src/lib/raymarch/raymarch?raw'
-import TINA_RAYMARCH_PHYSICS from '@src/lib/raymarch/physics.capsule?raw'
+import TINA_RAYMARCH_CAPSULE_COLLISIONS from '@src/lib/raymarch/collisions.capsule?raw'
 import TINA_KEYBOARD from '@src/lib/utils/keyboard?raw'
 
 const SCRIPT = [
   TINA_KEYBOARD,
   TINA_COMMON,
-  TINA_RAYMARCH_PHYSICS,
+  TINA_RAYMARCH_CAPSULE_COLLISIONS,
   TINA_RAYMARCH,
   TINA_RAYMARCH_MATERIAL,
   TINA_RAYMARCH_SCENE,
