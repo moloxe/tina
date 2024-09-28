@@ -12,7 +12,12 @@ type Props = {
 }
 
 const TinaExamples: FC<Props> = ({ examples }) => {
-  const [currentExample, setCurrentExample] = useState(6)
+  const [currentExample, setCurrentExample] = useState(
+    Math.max(
+      0,
+      examples.findIndex(({ route }) => route === 'tina-gallery-periodic-dream')
+    )
+  )
   const example = examples[currentExample]
 
   const sketch = useMemo(() => {

@@ -102,7 +102,7 @@ function setup() {
     ---
     fragColor =
       texture(graphics, uv) +
-      snoise(vec3(uv * 1e3, time)) * 0.1;
+      snoise(vec3(uv * (width + height), time * 2.)) * 0.1;
   `)
 }
 
