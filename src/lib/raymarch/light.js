@@ -63,13 +63,14 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
   float shininess = material.shininess;
 
   for(int i = 0; i < pointLights.length(); i++) {
-    if(pointLights[i].computeShadows) {
-      bool hitByLight = lightHits(pointLights[i].pos, pos);
+    PointLight pl = pointLights[i];
+    if(pl.computeShadows) {
+      bool hitByLight = lightHits(pl.pos, pos);
       if(!hitByLight) continue;
     }
     vec3 lightning = applyPointLight(
       pos, diffuseColor, shininess,
-      normal, pointLights[i], viewDir
+      normal, pl, viewDir
     );
     totalLightning = max(totalLightning, lightning);
   }
