@@ -47,10 +47,9 @@ function FragBuilder(tina) {
   }
 }
 
-function Tina(width, height, TINA_MODE) {
+function Tina(width, height) {
   this.width = width
   this.height = height
-  this.mode = TINA_MODE
   this.materials = []
   this.pointLights = []
   this.pos = [0, 0, 0]
