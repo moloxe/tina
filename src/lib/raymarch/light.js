@@ -42,7 +42,7 @@ vec3 applyPointLight(
 bool lightHits(vec3 lightOrigin, vec3 target) {
   vec3 lightDir = normalize(target - lightOrigin);
   RayMarch rm = rayMarch(lightOrigin, lightDir);
-  if(length(target - rm.pos) < 1e-2) return true;
+  if(length(target - rm.pos) < 1e-3) return true;
   return false;
 }
 
