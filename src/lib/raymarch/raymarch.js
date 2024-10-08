@@ -79,19 +79,23 @@ SdScene sdScene(vec3 p, int excludeGroup) {
   return sd;
 }
 
+const int   RM_MAX_ITER = 1024;
+const float RM_MIN_DIST = 1e-4;
+const float RM_MAX_DIST =  1e4;
+
 RayMarch rayMarch(vec3 ro, vec3 rd) {
   RayMarch rm = RayMarch(vec3(0.), -1);
   float z = 0.;
-  for(int i = 0; i < 1024; i++) {
+  for(int i = 0; i < RM_MAX_ITER; i++) {
     rm.pos = ro + z * rd;
     SdScene sd = sdScene(rm.pos, -1);
     float distance = abs(sd.distance);
-    if(distance < 1e-4) {
+    if(distance < RM_MIN_DIST) {
       rm.materialIndex = sd.materialIndex;
       break;
     }
     z += distance;
-    if(z > 1e4) {
+    if(z > RM_MAX_DIST) {
       break;
     }
   }

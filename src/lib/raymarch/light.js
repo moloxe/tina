@@ -6,20 +6,27 @@ struct PointLight {
   vec3 color;
   float power;
   bool computeShadows;
+  bool experimentalInnerReflection;
 };
 
 uniform PointLight pointLights[${POINT_LIGHTS}];
 
 vec3 applyPointLight(
-  vec3 pos, vec3 diffuseColor, float shininess,
-  vec3 normal, PointLight pointLight, vec3 viewDir
+  Material material,
+  vec3 pos, vec3 normal,
+  PointLight pointLight, vec3 viewDir
 ) {
+  vec3 diffuseColor = material.color;
+  float shininess = material.shininess;
+
   vec3 lightDir = pointLight.pos - pos;
   float distance = length(lightDir);
   distance *= distance;
   lightDir = normalize(lightDir);
 
-  float lambertian = max(dot(normal, lightDir), 0.);
+  float dotProduct = dot(normal, lightDir);
+  if(pointLight.experimentalInnerReflection) dotProduct = abs(dotProduct);
+  float lambertian = max(dotProduct, 0.);
   float specular = 0.;
 
   if (lambertian > 0.) {
@@ -55,12 +62,9 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
   }
 
   vec3 pos = rm.pos;
+  vec3 normal = calcSceneNormal(pos);
   vec3 viewDir = -rd;
   Material material = materials[rm.materialIndex];
-
-  vec3 normal = calcSceneNormal(pos);
-  vec3 diffuseColor = material.color;
-  float shininess = material.shininess;
 
   for(int i = 0; i < pointLights.length(); i++) {
     PointLight pl = pointLights[i];
@@ -69,8 +73,7 @@ vec3 calcLightning(vec3 ro, vec3 rd) {
       if(!hitByLight) continue;
     }
     vec3 lightning = applyPointLight(
-      pos, diffuseColor, shininess,
-      normal, pl, viewDir
+      material, pos, normal, pl, viewDir
     );
     totalLightning = max(totalLightning, lightning);
   }
@@ -84,15 +87,19 @@ function PointLight({
   color = [1, 1, 1],
   power = 1,
   computeShadows = false,
+  experimentalInnerReflection = false,
 }) {
   this.pos = pos
   this.color = color
   this.power = power
   this.computeShadows = computeShadows
+  this.experimentalInnerReflection = experimentalInnerReflection
   this.getUniforms = (index) => ({
     [`pointLights[${index}].pos`]: this.pos,
     [`pointLights[${index}].color`]: this.color,
     [`pointLights[${index}].power`]: this.power,
     [`pointLights[${index}].computeShadows`]: this.computeShadows,
+    [`pointLights[${index}].experimentalInnerReflection`]:
+      this.experimentalInnerReflection,
   })
 }

@@ -4,7 +4,7 @@ let player,
   table
 
 function Player() {
-  this.initialPos = [0, 1, 1]
+  this.initialPos = [-1, 1, 0]
   this.vel = [0, 0, 0]
   this.onTheFloor = true
   this.group = tina.parent({})
@@ -145,6 +145,7 @@ function setup() {
     pos: [-1, 1, 0],
     color: [0.9, 0.9, 0.6],
     computeShadows: true,
+    experimentalInnerReflection: true,
   })
 
   lights[0] = tina.pointLight({
