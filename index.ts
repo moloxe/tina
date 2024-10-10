@@ -1,5 +1,4 @@
 import { Elysia } from 'elysia'
-import { cors } from '@elysiajs/cors'
 
 import TINA from '../tina/lib/tina' with { type: 'text' }
 import TINA_COMMON from '../tina/lib/tina.common' with { type: 'text' }
@@ -22,7 +21,6 @@ const SCRIPT = [
 ].join('\n')
 
 const app = new Elysia()
-  .use(cors())
   .get('/', async () => {
     return SCRIPT
   })
