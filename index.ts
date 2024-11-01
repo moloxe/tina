@@ -7,12 +7,14 @@ import TINA_RAYMARCH_MATERIAL from '../tina/lib/raymarch/material' with { type: 
 import TINA_RAYMARCH_SCENE from '../tina/lib/raymarch/scene' with { type: 'text' }
 import TINA_RAYMARCH from '../tina/lib/raymarch/raymarch' with { type: 'text' }
 import TINA_RAYMARCH_CAPSULE_COLLISIONS from '../tina/lib/raymarch/collisions.capsule' with { type: 'text' }
+import TINA_RAYMARCH_CAPSULE_SPHERE from '../tina/lib/raymarch/collisions.sphere' with { type: 'text' }
 import TINA_KEYBOARD from '../tina/lib/utils/keyboard' with { type: 'text' }
 
 const SCRIPT = [
   TINA_KEYBOARD,
   TINA_COMMON,
   TINA_RAYMARCH_CAPSULE_COLLISIONS,
+  TINA_RAYMARCH_CAPSULE_SPHERE,
   TINA_RAYMARCH,
   TINA_RAYMARCH_MATERIAL,
   TINA_RAYMARCH_SCENE,
