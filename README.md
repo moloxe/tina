@@ -2,6 +2,6 @@
 
 Work in progress 🚧
 
-[https://moloxeio.pages.dev/tina/](https://moloxeio.pages.dev/tina/)
+[https://moloxe.github.io/tina/](https://moloxe.github.io/tina/)
 
 > The domain will be changed in the near future
