@@ -1,0 +1,63 @@
+---
+import Basic from '@src/layouts/Basic.astro'
+import TinaImg from './_assets/tina.jpeg'
+import TinaExamples, {
+  type TinaExample,
+} from '@src/pages/tina/_components/TinaExamples'
+
+const files = import.meta.glob('@src/pages/tina/_sketches/*.js', {
+  eager: false,
+  query: '?raw',
+})
+
+const paths = Object.keys(files)
+const examples: TinaExample[] = []
+
+for (let index = 0; index < paths.length; index++) {
+  const path = paths[index]
+  const route = path.split('/').pop()?.replace('.js', '') ?? ''
+  const sketch = ((await files[path]()) as any).default as string
+  examples.push({ route, sketch })
+}
+---
+
+<Basic title="Tina" lang="en" showPaths>
+  <main class="flex flex-col gap-12 p-2 justify-center w-full max-w-2xl m-auto">
+    <img src={TinaImg.src} alt="Tina logo" class="tina-logo" />
+
+    <div>
+      <p>Tina... Ray-marching engine for P5js 😎</p>
+      <p>
+        Try it by copying this <a
+          href="https://editor.p5js.org/moloxe/sketches/Mmk8d_crf"
+          target="_blank">sketch</a
+        > or any of the examples:
+      </p>
+    </div>
+
+    <TinaExamples client:load examples={examples} />
+  </main>
+</Basic>
+
+<footer class="py-16 flex justify-between max-w-2xl m-auto p-2">
+  <p>
+    © 2024. All content and pages are licensed under
+    <a
+      target="_blank"
+      href="https://creativecommons.org/licenses/by-sa/4.0/"
+      class="hover:text-white">CC BY-SA 4.0</a
+    >
+  </p>
+
+  <a href="/">Home</a>
+</footer>
+
+<style>
+  a {
+    @apply text-[var(--primary)];
+  }
+
+  .tina-logo {
+    filter: grayscale(1) contrast(1.6) brightness(4) opacity(0.8);
+  }
+</style>

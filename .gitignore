@@ -1,6 +1,5 @@
 # build output
-tina/
-!src/pages/tina/
+dist/
 
 # generated types
 .astro/
@@ -23,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Sub-Repos
+tina/
+# src/pages/tina
+!tina
+
+.temp-deploy/

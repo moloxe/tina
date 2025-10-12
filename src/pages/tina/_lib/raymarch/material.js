@@ -1,6 +1,6 @@
 const MATERIAL_ID = {
   parent: 0, // Represents a group of materials
-  // TODO: Add more shapes from https://iquilezles.org/articles/distfunctions/
+  // Overengineered
   sphere: 1,
   box: 2,
   capsule: 15,

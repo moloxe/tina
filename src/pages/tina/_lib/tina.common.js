@@ -33,6 +33,16 @@ vec2 toCartesian(vec2 polar) {
   return vec2(x, y);
 }
 
+float getAngularDist(float angle1, float angle2) {
+  float angle = angle1 - angle2;
+  if (angle > PI) {
+    angle -= 2.0 * PI;
+  } else if (angle <= -PI) {
+    angle += 2.0 * PI;
+  }
+  return angle;
+}
+
 // https://iquilezles.org/articles/distfunctions/
 
 float dot2(in vec2 v) {

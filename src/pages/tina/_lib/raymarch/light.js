@@ -10,10 +10,11 @@ struct PointLight {
   float shadowness;
 };
 
-${POINT_LIGHTS > 0
+${
+  POINT_LIGHTS > 0
     ? /* glsl */ `uniform PointLight pointLights[${POINT_LIGHTS}];`
     : ''
-  }
+}
 
 vec3 applyPointLight(
   Material material,
@@ -128,8 +129,9 @@ SceneLightning calcSceneLightning(vec3 ro, vec3 rd) {
   vec3 viewDir = -rd;
   Material material = materials[rm.materialIndex];
 
-  ${POINT_LIGHTS > 0
-    ? /* glsl */ `
+  ${
+    POINT_LIGHTS > 0
+      ? /* glsl */ `
   for(int i = 0; i < pointLights.length(); i++) {
     PointLight pl = pointLights[i];
     bool lightIsInside = false;
@@ -144,7 +146,7 @@ SceneLightning calcSceneLightning(vec3 ro, vec3 rd) {
     );
     totalLightning = mix(totalLightning, lightning, .5);
   }`
-    : /* glsl */ `
+      : /* glsl */ `
     PointLight pl = PointLight(ro, vec3(1.), 0., false, 0., 0.);
     totalLightning = applyPointLight(
       material, pos, normal, pl, viewDir, false, 0.
@@ -162,7 +164,7 @@ function PointLight({
   power = 1,
   computeShadows = false,
   offsetRadius = 0,
-  shadowness = 1.
+  shadowness = 1,
 }) {
   this.pos = pos
   this.color = color
