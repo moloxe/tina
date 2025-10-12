@@ -5,7 +5,7 @@ const { scene: title } = Astro.params
 const { sketch: SKETCH } = Astro.props
 
 export async function getStaticPaths() {
-  const files = import.meta.glob('@src/pages/tina/_sketches/*.js', {
+  const files = import.meta.glob('@src/pages/_sketches/*.js', {
     eager: false,
     query: '?raw',
   })
@@ -44,7 +44,7 @@ if (includeP5Sound) {
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
     {p5Scripts.map((script) => <script src={script} />)}
-    <script src="/tina/lib.js" is:inline></script>
+    <script src="/lib.js" is:inline></script>
   </head>
   <body>
     <img

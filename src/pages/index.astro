@@ -3,9 +3,9 @@ import Basic from '@src/layouts/Basic.astro'
 import TinaImg from './_assets/tina.jpeg'
 import TinaExamples, {
   type TinaExample,
-} from '@src/pages/tina/_components/TinaExamples'
+} from '@src/pages/_components/TinaExamples'
 
-const files = import.meta.glob('@src/pages/tina/_sketches/*.js', {
+const files = import.meta.glob('@src/pages/_sketches/*.js', {
   eager: false,
   query: '?raw',
 })
