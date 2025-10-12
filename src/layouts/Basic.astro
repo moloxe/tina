@@ -9,32 +9,17 @@ type Props = {
   title: string
   allowIndexing?: boolean
   allowAnalytics?: boolean
-  showPaths?: boolean
   seoDescription?: string
   seoImg?: string
 }
 
-const { htmlClass, showPaths, seoDescription, seoImg } = Astro.props
+const { htmlClass, seoDescription, seoImg } = Astro.props
 
 const lang = Astro.props.lang || 'es'
 const title = Astro.props.title
 const scripts = Astro.props.scripts || []
 const allowIndexing = Astro.props.allowIndexing ?? true
 const allowAnalytics = Astro.props.allowAnalytics ?? true
-
-const paths = (() => {
-  const paths: { pathname: string; name: string }[] = []
-  const pathname = Astro.url.pathname
-    .split('/')
-    .filter((p, index) => !(p === '' && index > 0))
-  pathname.forEach((path, index) => {
-    paths.push({
-      pathname: `${paths[index - 1]?.pathname ?? '/'}${index > 1 ? '/' : ''}${path}`,
-      name: index === 0 ? 'Home' : path,
-    })
-  })
-  return paths
-})()
 
 // TODO: Turn on when domain is ready
 // const canonicalHref = `https://moloxe.io${Astro.url.pathname}`
@@ -87,22 +72,6 @@ const paths = (() => {
           referrerpolicy="unsafe-url"
           id="libre-counter"
         />
-      )
-    }
-
-    {
-      showPaths && (
-        <p class="text-xs font-mono p-2 text-neutral-400 leading-5 break-all">
-          {paths.map((path, index) => (
-            <>
-              {index > 0 && ' / '}
-              <a
-                href={path.pathname}
-                class="hover:text-white"
-              >{`${path.name}`}</a>
-            </>
-          ))}
-        </p>
       )
     }
 

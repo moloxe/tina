@@ -47,7 +47,9 @@ const TinaExamples: FC<Props> = ({ examples }) => {
               {isCurrent ? (
                 <>
                   <a
-                    href={`/${example.route}`}
+                    href={`${import.meta.env.DEV ? '' : '/tina'}/${
+                      example.route
+                    }`}
                     target="_blank"
                     className="underline text-primary"
                   >
@@ -68,7 +70,11 @@ const TinaExamples: FC<Props> = ({ examples }) => {
         })}
       </ul>
 
-      <iframe src={`/${example.route}`} height="400" width="100%" />
+      <iframe
+        src={`${import.meta.env.DEV ? '' : '/tina'}/${example.route}`}
+        height="400"
+        width="100%"
+      />
 
       <h1>{example.route}</h1>
 
