@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
+    "deploy": "sh deploy.sh",
     "check": "astro check",
     "start": "astro dev",
     "preview": "astro preview",
