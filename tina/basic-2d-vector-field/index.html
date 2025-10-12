@@ -1,0 +1,51 @@
+<!DOCTYPE html><html> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.7"><meta name="robots" content="noindex, nofollow"><title>basic-2d-vector-field</title><script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script><script src="/tina/lib.js"></script><link rel="stylesheet" href="/_astro/_scene_.CLByPAuj.css">
+<link rel="stylesheet" href="/_astro/index.BLNA0wXg.css">
+<style>html{overflow:hidden}canvas{margin:auto}
+</style></head> <body> <img class="absolute w-0 h-0" src="https://librecounter.org/counter.svg" loading="eager" decoding="async" referrerpolicy="unsafe-url" id="libre-counter"> <script>let tina
+
+function setup() {
+  createCanvas(windowWidth, windowHeight)
+
+  tina = new Tina(width, height)
+
+  tina.build(/* glsl */ `
+    #define scale vec2(3.)
+
+    vec2 getTarget(vec2 origin) {
+      float x = origin.x;
+      float y = origin.y;
+      return vec2(
+        x*x - y*y - 4.,
+        2. * x*y
+      );
+    }
+
+    ---
+
+    vec2 xy = uv.xy * 2. - 1.;
+    xy *= vec2(width / height, -1.);
+
+    vec2 origin = xy * scale;
+    vec2 target = getTarget(origin);
+
+    float t = sin(time + PI) * .5 + .5;
+    target = (1. - t) * origin + t * target;
+
+    float angleO = atan(origin.y, origin.x);
+    float angleT = atan(target.y, target.x);
+
+    float eDist = length(origin - target);
+    float aDist = getAngularDist(angleO, angleT);
+    aDist = aDist / (2. * PI);
+
+    vec3 c = hsv2rgb(vec3(aDist, 1., log(1. + eDist)));
+
+    fragColor = vec4(c, 1.0);
+  `)
+}
+
+function draw() {
+  const graphics = tina.update()
+  image(graphics, 0, 0, width, height)
+}
+</script> </body> </html> 

@@ -1,0 +1,50 @@
+<!DOCTYPE html><html> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.7"><meta name="robots" content="noindex, nofollow"><title>rm-simplex-noise-terrain</title><script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script><script src="/tina/lib.js"></script><link rel="stylesheet" href="/_astro/_scene_.CLByPAuj.css">
+<link rel="stylesheet" href="/_astro/index.BLNA0wXg.css">
+<style>html{overflow:hidden}canvas{margin:auto}
+</style></head> <body> <img class="absolute w-0 h-0" src="https://librecounter.org/counter.svg" loading="eager" decoding="async" referrerpolicy="unsafe-url" id="libre-counter"> <script>let tina,
+  moon = {}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight)
+  tina = new Tina(240 * (width / height), 240, { useInterlacing: true })
+
+  tina.shape({
+    sdFunc: `(
+      pos.y - snoise(vec3(pos.xz, pos.y - time / 10.))
+    ) / 7.`,
+    shininess: 1024,
+  })
+
+  moon.sphere = tina.sphere({
+    radius: 1,
+  })
+
+  moon.pl = tina.pointLight({
+    color: [0.9, 1, 1],
+    power: 20,
+    computeShadows: true,
+    offsetRadius: 1.01,
+    shadowness: 0.5,
+  })
+
+  tina.build(/* glsl */ `
+    Scene scene = calcScene();
+    fragColor = round(scene.color * 32.) / 32.;
+  `)
+
+  noSmooth()
+}
+
+function draw() {
+  const time = performance.now() / 1000
+
+  tina.spherical = [0.1, sin(time / 2) / 2, -0.3]
+  tina.pos = [0, 0.6, -time / 4]
+
+  moon.pl.pos = [0, 1.5, tina.pos[2] - 5]
+  moon.sphere.pos = moon.pl.pos
+
+  const graphics = tina.update()
+  image(graphics, 0, 0, width, height)
+}
+</script> </body> </html> 

@@ -1,0 +1,34 @@
+<!DOCTYPE html><html> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.7"><meta name="robots" content="noindex, nofollow"><title>rm-morphology</title><script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script><script src="/tina/lib.js"></script><link rel="stylesheet" href="/_astro/_scene_.CLByPAuj.css">
+<link rel="stylesheet" href="/_astro/index.BLNA0wXg.css">
+<style>html{overflow:hidden}canvas{margin:auto}
+</style></head> <body> <img class="absolute w-0 h-0" src="https://librecounter.org/counter.svg" loading="eager" decoding="async" referrerpolicy="unsafe-url" id="libre-counter"> <script>let tina, thing
+
+function setup() {
+    createCanvas(windowWidth, windowHeight)
+    tina = new Tina(width, height)
+
+    tina.pos = [0, 0, 2]
+
+    const bounce = 'pow(sin(time * .2), 2.)';
+    thing = tina.shape({
+        sdFunc: `(
+            sdTorus(pos, vec2(.8, .2))
+        ) * ${bounce} + (
+            sdBox(pos, vec3(.6))
+        ) * (1. - ${bounce})`,
+        shininess: 2048,
+        color: [0, 0.9, 0.8],
+    })
+
+    tina.build()
+    tina.fov = 100
+}
+
+
+function draw() {
+    thing.rotation[0] += 0.006
+    thing.rotation[1] += 0.006
+    const graphics = tina.update()
+    image(graphics, 0, 0, width, height)
+}
+</script> </body> </html> 
