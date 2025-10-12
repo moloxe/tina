@@ -33,6 +33,8 @@ if (includeP5Sound) {
     'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/addons/p5.sound.min.js'
   )
 }
+
+const libSrc = import.meta.env.DEV ? '/lib.js' : '/tina/lib.js'
 ---
 
 <!doctype html>
@@ -44,7 +46,7 @@ if (includeP5Sound) {
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
     {p5Scripts.map((script) => <script src={script} />)}
-    <script src="/lib.js" is:inline></script>
+    <script src={libSrc} is:inline></script>
   </head>
   <body>
     <img
