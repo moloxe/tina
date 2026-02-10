@@ -49,7 +49,7 @@ function Player() {
 function setup() {
   createCanvas(windowWidth, windowHeight)
 
-  tina = new Tina(...getResolution(), { useInterlacing: true })
+  tina = new Tina(...getResolution())
   player = new Player()
 
   tina.spherical = [0.6, 0, -0.5]
@@ -149,6 +149,9 @@ function setup() {
   `)
   player.body.build(tina)
 
+  const FPS = 60
+  frameRate(FPS)
+
   keyboardListener({
     Space: () => player.move('UP'),
     MetaLeft: () => player.move('DOWN'),
@@ -159,8 +162,8 @@ function setup() {
     KeyD: () => player.move('RIGHT'),
   })
 
-  const physicsFreq = 1000 / 60
-  const gravity = 0.12 / 60
+  const physicsFreq = 1000 / FPS
+  const gravity = 0.12 / FPS
   player.body.startPhysics(physicsFreq, (collisions, delta) => {
     player.onTheFloor = collisions[1] > 0.01
 
@@ -219,7 +222,7 @@ function mouseWheel(event) {
 }
 
 function getResolution() {
-  return [360 * (width / height), 360]
+  return [100 * (width / height), 100]
 }
 
 let resizeTimeout
