@@ -45,7 +45,7 @@ const libSrc = import.meta.env.DEV ? '/lib.js' : '/tina/lib.js'
     <meta name="generator" content={Astro.generator} />
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
-    {p5Scripts.map((script) => <script src={script} />)}
+    {p5Scripts.map((script) => <script src={script} is:inline />)}
     <script src={libSrc} is:inline></script>
   </head>
   <body>

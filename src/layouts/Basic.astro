@@ -8,7 +8,6 @@ type Props = {
   scripts?: string[]
   title: string
   allowIndexing?: boolean
-  allowAnalytics?: boolean
   seoDescription?: string
   seoImg?: string
 }
@@ -19,10 +18,6 @@ const lang = Astro.props.lang || 'es'
 const title = Astro.props.title
 const scripts = Astro.props.scripts || []
 const allowIndexing = Astro.props.allowIndexing ?? true
-const allowAnalytics = Astro.props.allowAnalytics ?? true
-
-// TODO: Turn on when domain is ready
-// const canonicalHref = `https://moloxe.io${Astro.url.pathname}`
 ---
 
 <!doctype html>
@@ -62,19 +57,14 @@ const allowAnalytics = Astro.props.allowAnalytics ?? true
     <ClientRouter />
   </head>
   <body>
-    {
-      allowAnalytics && (
-        <img
-          class="absolute w-0 h-0"
-          src="https://librecounter.org/counter.svg"
-          loading="eager"
-          decoding="async"
-          referrerpolicy="unsafe-url"
-          id="libre-counter"
-        />
-      )
-    }
-
+    <img
+      class="absolute w-0 h-0"
+      src="https://librecounter.org/counter.svg"
+      loading="eager"
+      decoding="async"
+      referrerpolicy="unsafe-url"
+      id="libre-counter"
+    />
     <slot />
   </body>
 </html>
